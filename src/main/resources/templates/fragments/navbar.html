@@ -1,63 +1,32 @@
-<!--<nav class="navbar navbar-expand-lg navbar-dark bg-dark">-->
-<!--    &lt;!&ndash; Logo i nazwa strony &ndash;&gt;-->
-<!--    <a class="navbar-brand" href="#">Moja Strona</a>-->
-<!--    &lt;!&ndash; Przycisk rozwijania na urządzeniach mobilnych &ndash;&gt;-->
-<!--    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"-->
-<!--            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-light" th:fragment="nav">-->
+<!--    <a class="navbar-brand" href="#">Witaj Tom</a>-->
+<!--    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">-->
 <!--        <span class="navbar-toggler-icon"></span>-->
 <!--    </button>-->
-<!--    &lt;!&ndash; Elementy menu &ndash;&gt;-->
-<!--    <div class="collapse navbar-collapse" id="navbarNav">-->
-<!--        <ul class="navbar-nav">-->
-<!--            &lt;!&ndash; Linki do innych stron &ndash;&gt;-->
-<!--            <li class="nav-item active">-->
-<!--                <a class="nav-link" href="#">Strona główna <span class="sr-only">(current)</span></a>-->
-<!--            </li>-->
+<!--    <div class="collapse navbar-collapse" id="navbarNavDropdown">-->
+<!--        <ul class="navbar-nav mr-auto">-->
+<!--            &lt;!&ndash; Tutaj miejsce na dodatkowe opcje w menu &ndash;&gt;-->
 <!--        </ul>-->
-<!--        &lt;!&ndash; Wyświetlenie loginu i nazwiska użytkownika &ndash;&gt;-->
-<!--        <ul class="navbar-nav ml-auto">-->
-<!--            <li class="nav-item">-->
-<!--                <span class="nav-link" th:text="'Witaj, ' + ${user.name} + ' ' + ${user.surname}"></span>-->
-<!--            </li>-->
-<!--            &lt;!&ndash; Link "Dodaj test" dla administratora &ndash;&gt;-->
-<!--            <li class="nav-item" th:if="${user.role == 'ADMIN'}">-->
-<!--                <a class="nav-link" href="#">Dodaj test</a>-->
-<!--            </li>-->
-<!--            &lt;!&ndash; Link "Twoje testy" dla użytkownika &ndash;&gt;-->
-<!--            <li class="nav-item" th:if="${user.role == 'USER'}">-->
-<!--                <a class="nav-link" href="#">Twoje testy</a>-->
+<!--        <ul class="navbar-nav">-->
+<!--            <li class="nav-item dropdown">-->
+<!--                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                    Menu-->
+<!--                </a>-->
+<!--                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="right: 0; left:auto;">-->
+<!--                    <div class="dropdown-item d-flex justify-content-between">-->
+<!--                        <a class="dropdown-item" href="#" th:text="${user.xxx}"></a>-->
+<!--                        <a class="dropdown-item fw-bold" href="#" th:style="'color: ' + (${user.role == 'ADMIN'} ? 'orange' : 'green')" th:text="${user.role}"></a>-->
+<!--                    </div>-->
+<!--                    <hr class="dropdown-divider">-->
+<!--                    <a class="dropdown-item" href="#">Profil</a>-->
+<!--                    <a th:if="${user.role == 'ADMIN'}" class="dropdown-item" href="#">Stwórz test</a>-->
+<!--                    <a th:if="${user.role == 'ADMIN'}" class="dropdown-item" href="#">Zarządzaj testami</a>-->
+<!--                    <a th:if="${user.role == 'ADMIN'}" class="dropdown-item" href="#">Twoje testy</a>-->
+<!--                    <a class="dropdown-item" href="/api/logout" onclick="logout()">-->
+<!--                        Wyloguj-->
+<!--                    </a>-->
+<!--                </div>-->
 <!--            </li>-->
 <!--        </ul>-->
 <!--    </div>-->
 <!--</nav>-->
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light" th:fragment="nav">
-    <a class="navbar-brand" href="#">Witaj Tom</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav mr-auto">
-            <!-- Tutaj miejsce na dodatkowe opcje w menu -->
-        </ul>
-        <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Menu
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="right: 0; left:auto;">
-                    <div class="dropdown-item d-flex justify-content-between">
-                        <a class="dropdown-item" href="#" th:text="${user.indeks}"></a>
-                        <a class="dropdown-item fw-bold" href="#" th:style="'color: ' + (${user.role == 'ADMIN'} ? 'orange' : 'green')" th:text="${user.role}"></a>
-                    </div>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="#">Profil</a>
-                    <a th:if="${user.role == 'ADMIN'}" class="dropdown-item" href="#">Stwórz test</a>
-                    <a th:if="${user.role == 'ADMIN'}" class="dropdown-item" href="#">Zarządzaj testami</a>
-                    <a th:if="${user.role == 'USER'}" class="dropdown-item" href="#">Twoje testy</a>
-                    <a class="dropdown-item" href="#">Wyloguj</a>
-                </div>
-            </li>
-        </ul>
-    </div>
-</nav>

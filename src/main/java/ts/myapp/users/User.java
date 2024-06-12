@@ -1,6 +1,7 @@
 package ts.myapp.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,8 @@ import ts.myapp.answers.UserAnswer;
 
 import java.util.List;
 
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user"})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,6 +26,7 @@ public class User {
     @JsonIgnore
     private String username;
 
+    @Column(name="password")
     @JsonIgnore
     private String password;
 
@@ -32,7 +36,8 @@ public class User {
 
     private String surname;
 
-    private String indeks;
+    @Column(name="indeks")
+    private String xdd;
 
 //    hidden-relations
 
