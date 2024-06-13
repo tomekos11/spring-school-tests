@@ -20,10 +20,8 @@ public class Group {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
 
-    @JsonIgnore
     private String name;
 
-    @JsonIgnore
     private String type;
 
     private int year;
@@ -33,10 +31,10 @@ public class Group {
 //    hidden-relations
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UserGroup> users;
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GroupTest> tests;
 

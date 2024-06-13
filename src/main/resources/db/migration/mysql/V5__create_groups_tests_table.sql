@@ -10,5 +10,7 @@ CREATE TABLE groups_tests (
 );
 
 INSERT INTO groups_tests (group_id, test_id, begin_date, end_date) VALUES
-    (1, 1, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY));
+    (1, 1, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY)),
+    (2, 1, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY)),
+    (2, 2, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY));
 

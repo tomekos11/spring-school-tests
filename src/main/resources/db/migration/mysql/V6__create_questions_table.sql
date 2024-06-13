@@ -9,5 +9,7 @@ CREATE TABLE questions (
 );
 
 INSERT INTO questions(test_id, question, image, point_amount) VALUES
-    (1, 'Czy jablko jest zielone?', '', 1);
+    (1, 'Czy jablko jest zielone?', '', 1),
+    (2, 'Czy jablko jest czerwone?', '', 2),
+    (2, 'Czy jablko jest rozowe?', '', 3);
 

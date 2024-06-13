@@ -8,5 +8,5 @@ CREATE TABLE groups (
 );
 
 INSERT INTO groups (name, type, year, season) VALUES
-   ('3EF-DI-AA', 'lab', 2024, 'summer');
-
+    ('3EF-DI-AA', 'lab', 2024, 'summer'),
+    ('2EF-DI-AA', 'lab', 2024, 'summer');

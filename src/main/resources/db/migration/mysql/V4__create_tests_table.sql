@@ -6,4 +6,5 @@ CREATE TABLE tests (
 );
 
 INSERT INTO tests (name, alias) VALUES
-    ('kolokwium 1', 'kolokwium 1 - informatyka 3 rok');
+    ('kolokwium 1', 'kolokwium 1 - informatyka 3 rok'),
+    ('kolokwium 2', 'kolokwium 2 - informatyka 3 rok');

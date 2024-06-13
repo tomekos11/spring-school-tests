@@ -1,23 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Strona z paskiem nawigacyjnym</title>
-    <script
-        src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossOrigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</head>
+    <head th:replace="fragments/head :: head"></head>
 <body>
-<!--    <div th:replace="fragments/navbar :: nav(user=${user})"></div>-->
 <!--    <div th:text="${user}"></div>-->
-    <div th:text="${user.id}"></div>
-    <div th:text="${tests}"></div>
+<!--    <div th:text="${tests}"></div>-->
+    <div th:replace="fragments/navbar :: nav(user=${user})"></div>
+
+    <!--    <div th:text="${user}"></div>-->
+    <!--    <div th:text="${user.groups}"></div>-->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Segment "Twoje wyniki" -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Twoje wyniki</h5>
+                        <p class="card-text">Tutaj możesz umieścić informacje o twoich wynikach.</p>
+                        <!-- Możesz użyć danych z Thymeleafa tutaj -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segment "Twoje dane" -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Twoje dane</h5>
+                        <p class="card-text" th:text="'Imie = ' + ${user.name}"></p>
+                        <p class="card-text" th:text="'Nazwisko = ' + ${user.surname}"></p>
+                        <p class="card-text text-success text-bold" th:text="'Indeks = ' + ${user.indeks}"></p>
+                        <div th:each="group : ${user.getGroups()}">
+                            <p class="card-text" th:text="${group.getGroup().getName()}"></p>
+                            <p class="card-text" th:text="${group.getGroup().getType()}"></p>
+                            <p class="card-text" th:text="${group.getGroup().getSeason()}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segment "Nadchodzące terminy testów" -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Nadchodzące terminy testów</h5>
+                        <div th:each="group : ${user.getGroups()}">
+                            <div th:if="${group != null and group.getGroup() != null and group.getGroup().getTests() != null}">
+                                <div th:each="test : ${group.getGroup().getTests()}" class="d-flex justify-content-around border border-black-50 rounded p-2">
+                                    <div>
+                                        <div th:text="${test.getTest().getName()}" class="text-bold fw-bold"></div>
+                                        <div th:text="${test.getBegin_date()}"></div>
+                                    </div>
+                                    <div>
+                                        <a th:href="'/test/' + ${test.getId()}">
+                                            Zacznij
+                                        </a>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script th:replace="js/logout :: script"></script>
 </body>
+
+
+
 </html>

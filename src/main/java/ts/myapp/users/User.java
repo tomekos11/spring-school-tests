@@ -37,11 +37,10 @@ public class User {
     private String surname;
 
     @Column(name="indeks")
-    private String xdd;
+    private String indeks;
 
 //    hidden-relations
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserGroup> groups;
 

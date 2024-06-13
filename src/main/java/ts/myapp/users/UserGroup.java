@@ -10,7 +10,6 @@ import ts.myapp.groups.Group;
 
 import java.util.List;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user", "group"})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -21,7 +21,6 @@ public class GroupTest {
         @GeneratedValue(strategy= GenerationType.IDENTITY)
         private int id;
 
-        @JsonIgnore
         @ManyToOne
         private Test test;
 

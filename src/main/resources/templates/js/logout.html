@@ -1,0 +1,8 @@
+<script>
+    const logout = () => {
+        axios.get('/api/logout')
+            .then(res => {
+                if (res.data.success) window.location.reload();
+            })
+    }
+</script>

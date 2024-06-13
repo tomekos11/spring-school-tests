@@ -15,17 +15,6 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("api/me")
-    public User me() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserName = authentication.getName();
-
-
-        User user = userRepository.findUserByUsername(currentUserName);
-
-        return user;
-    }
-
     @GetMapping("/api/logout")
     public ApiResponse<String> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

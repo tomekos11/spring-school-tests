@@ -26,6 +26,8 @@ public class Answer {
     @ManyToOne
     private Question question;
 
+    private String answer;
+
     @Column(name="is_correct")
     private boolean isCorrect;
 

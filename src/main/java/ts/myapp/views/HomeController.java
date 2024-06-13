@@ -2,11 +2,13 @@ package ts.myapp.views;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import ts.myapp.groups.Group;
+import ts.myapp.services.UserService;
 import ts.myapp.tests.TestController;
 import ts.myapp.users.UserController;
 import ts.myapp.users.User;
@@ -20,13 +22,13 @@ import java.util.List;
 @Controller
 public class HomeController {
     @Autowired
-    private UserController userController;
-    @Autowired
     private TestController testController;
     @Autowired
     private UserRepository userRepository;
 
     private final ObjectMapper objectMapper;
+    @Autowired
+    private UserService userService;
 
     public HomeController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper
@@ -36,22 +38,15 @@ public class HomeController {
 
     @GetMapping("/")
     public String homePage(Model model) throws JsonProcessingException {
-        // Wywołaj metodę me() z kontrolera UserController, aby pobrać dane użytkownika
-        User currentUser = userRepository.findUserByUsername("admin");
-//        User currentUser = userController.me();
+
+        User currentUser = userService.me();
 
         String serializedUser = objectMapper.writeValueAsString(currentUser);
-        User userr = objectMapper.readValue(serializedUser, User.class);
+        User user = objectMapper.readValue(serializedUser, User.class);
 
-        String serializedTests = objectMapper.writeValueAsString(testController.tests().getData());
-        List<UserGroup> testss = objectMapper.readValue(serializedTests, new TypeReference<List<UserGroup>>() {});
+        model.addAttribute("user", user);
 
-
-        // Przekaż dane użytkownika do widoku Thymeleafa
-        model.addAttribute("user", userr);
-        model.addAttribute("tests", testss);
-
-        return "index"; // Zwraca nazwę pliku HTML Thymeleaf (bez rozszerzenia)
+        return "index";
     }
 
 
