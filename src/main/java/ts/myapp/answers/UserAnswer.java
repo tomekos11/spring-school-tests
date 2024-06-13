@@ -10,6 +10,7 @@ import ts.myapp.groups.GroupTest;
 import ts.myapp.questions.Question;
 import ts.myapp.tests.Test;
 import ts.myapp.users.User;
+import ts.myapp.users.UserGroup;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class UserAnswer {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
 
     @JsonIgnore
@@ -30,12 +31,16 @@ public class UserAnswer {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
 
+
     @Column(name="is_correct")
-    private boolean isCorrect;
+    private Boolean isCorrect;
+
+    //    hidden-relations
+    @OneToMany(mappedBy = "userAnswer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<AnswerUserAnswer> userResponse;
 
 }

@@ -18,7 +18,7 @@ public class Group {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String name;
 
@@ -31,7 +31,7 @@ public class Group {
 //    hidden-relations
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserGroup> users;
 
 

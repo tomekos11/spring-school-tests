@@ -1,21 +1,19 @@
-package ts.myapp.users;
+package ts.myapp.answers;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ts.myapp.groups.Group;
-
-import java.util.List;
+import ts.myapp.users.User;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="users_groups")
-public class UserGroup {
+@Table(name="answers_user_answers")
+public class AnswerUserAnswer {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -23,11 +21,12 @@ public class UserGroup {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "answer_id")
+    private Answer answer;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @JoinColumn(name = "user_answer_id")
+    private UserAnswer userAnswer;
 
 }

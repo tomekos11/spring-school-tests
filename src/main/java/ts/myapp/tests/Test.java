@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import ts.myapp.groups.GroupTest;
 import ts.myapp.questions.Question;
 import ts.myapp.users.UserGroup;
+import ts.myapp.users.UserTest;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class Test {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String name;
 
@@ -30,10 +31,13 @@ public class Test {
 
     @JsonIgnore
     @OneToMany(mappedBy = "test", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<GroupTest> tests;
+    private List<GroupTest> groupTests;
+
+    @OneToMany(mappedBy = "test", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Question> questions;
 
     @JsonIgnore
     @OneToMany(mappedBy = "test", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Question> questions;
+    private List<UserTest> users;
 
 }

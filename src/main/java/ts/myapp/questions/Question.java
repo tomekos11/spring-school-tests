@@ -21,7 +21,7 @@ public class Question {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String question;
 
@@ -30,13 +30,13 @@ public class Question {
 
     private String image;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "test_id")
     private Test test;
 
 //    hidden-relations
 
-    @JsonIgnore
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Answer> answers;
 

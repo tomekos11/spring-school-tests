@@ -7,8 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ts.myapp.answers.UserAnswer;
+import ts.myapp.groups.Group;
 
 import java.util.List;
+import java.util.SequencedCollection;
 
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user"})
@@ -21,7 +23,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @JsonIgnore
     private String username;
@@ -48,4 +50,11 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserAnswer> answers;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserTest> tests;
+
+    @JsonIgnore
+    public List<Long> getGroupNames () {
+        return this.getGroups().stream().map(el -> el.getGroup().getId()).toList();
+    }
 }

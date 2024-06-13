@@ -41,10 +41,16 @@ public class HomeController {
 
         User currentUser = userService.me();
 
-        String serializedUser = objectMapper.writeValueAsString(currentUser);
-        User user = objectMapper.readValue(serializedUser, User.class);
+        List<Group> groups = currentUser.getGroups().stream().map(el -> el.getGroup()).toList();
 
-        model.addAttribute("user", user);
+        String serializedUser = objectMapper.writeValueAsString(currentUser);
+        User deserializedUser = objectMapper.readValue(serializedUser, User.class);
+
+        String serializedGroups = objectMapper.writeValueAsString(groups);
+        List<Group> deserializedGroups = objectMapper.readValue(serializedGroups, new TypeReference<List<Group>>() {});
+
+        model.addAttribute("user", deserializedUser);
+        model.addAttribute("userGroups", deserializedGroups);
 
         return "index";
     }

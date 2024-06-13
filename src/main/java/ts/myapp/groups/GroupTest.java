@@ -19,7 +19,7 @@ public class GroupTest {
 
         @Id
         @GeneratedValue(strategy= GenerationType.IDENTITY)
-        private int id;
+        private long id;
 
         @ManyToOne
         private Test test;
@@ -28,9 +28,11 @@ public class GroupTest {
         @ManyToOne
         private Group group;
 
-        private LocalDateTime begin_date;
+        @Column(name="begin_date")
+        private LocalDateTime beginDate;
 
-        private LocalDateTime end_date;
+        @Column(name="end_date")
+        private LocalDateTime endDate;
 
     //    hidden-relations
 

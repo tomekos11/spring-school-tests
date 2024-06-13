@@ -2,12 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head th:replace="fragments/head :: head"></head>
 <body>
-<!--    <div th:text="${user}"></div>-->
-<!--    <div th:text="${tests}"></div>-->
     <div th:replace="fragments/navbar :: nav(user=${user})"></div>
 
-    <!--    <div th:text="${user}"></div>-->
-    <!--    <div th:text="${user.groups}"></div>-->
     <div class="container mt-4">
         <div class="row">
             <!-- Segment "Twoje wyniki" -->
@@ -44,18 +40,23 @@
                     <div class="card-body">
                         <h5 class="card-title">Nadchodzące terminy testów</h5>
                         <div th:each="group : ${user.getGroups()}">
-                            <div th:if="${group != null and group.getGroup() != null and group.getGroup().getTests() != null}">
-                                <div th:each="test : ${group.getGroup().getTests()}" class="d-flex justify-content-around border border-black-50 rounded p-2">
+                            <div th:if="${group != null and group.getGroup() != null and group.getGroup().getTests != null}">
+                                <div th:each="loopTest : ${group.getGroup().getTests()}" class="d-flex justify-content-around border border-black-50 rounded p-2">
                                     <div>
-                                        <div th:text="${test.getTest().getName()}" class="text-bold fw-bold"></div>
-                                        <div th:text="${test.getBegin_date()}"></div>
+                                        <div th:text="${loopTest.getTest().getName()}" class="text-bold fw-bold"></div>
+                                        <div class="text-bold fw-bold fs-7">
+                                            <span th:text="${group.getGroup().getName()}"></span>
+                                            <span th:text="${group.getGroup().getType()}" class="text-success"></span>
+                                        </div>
+                                        <div th:text="${loopTest.getBeginDate() + ' - ' + loopTest.getEndDate()}"></div>
                                     </div>
                                     <div>
-                                        <a th:href="'/test/' + ${test.getId()}">
+                                        <a th:href="${'/group/' + group.getGroup().getId() + '/test/' + loopTest.getId()}">
                                             Zacznij
                                         </a>
                                     </div>
                                 </div>
+                            </div>
                         </div>
                     </div>
                 </div>

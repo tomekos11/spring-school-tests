@@ -8,6 +8,3 @@ CREATE TABLE users_answers (
     FOREIGN KEY (question_id) REFERENCES questions(id)
 );
 
-INSERT INTO users_answers (user_id, question_id, is_correct) VALUES
-    (1, 1, 1);
-

@@ -31,7 +31,7 @@
 
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Java Pro - tests</a>
+        <a class="navbar-brand" href="/">Java Pro - tests</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -59,7 +59,7 @@
                         <a th:if="${user.role == 'ADMIN'}" href="/tests">Twoje testy</a>
                     </li>
                     <li>
-                        <a onclick="logout()">Wyloguj</a>
+                        <a style="cursor: pointer" onclick="logout()">Wyloguj</a>
                     </li>
                 </ul>
                 <form class="d-flex mt-3" role="search">
@@ -72,7 +72,7 @@
 </nav>
 
 <style>
-    .navbar-nav > * {
+    .navbar-nav li a {
         color: chartreuse;
     }
 </style>

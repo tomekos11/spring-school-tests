@@ -6,10 +6,98 @@
     <body>
         <div th:replace="fragments/navbar :: nav(user=${user})"></div>
 
-        <div th:text="${test}"></div>
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-header">
+                    <h2 th:text="${userTest.getTest().getName()}">Test Name</h2>
+                    <p th:text="${#temporals.format(groupTest.getBeginDate(), 'dd MMMM yyyy') + ' ' + #temporals.format(groupTest.getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(groupTest.getEndDate(), 'HH:mm')}">Start Date</p>
+                </div>
+                <div class="card-body">
+                    <div th:if="${lastQuestion == null}">
+                        <p>
+                            <span>
+                                Czy chcesz rozpocząć test&nbsp;
+                            </span>
+                            <span th:text="${userTest.getTest().getName()}"></span>
+                        </p>
+                        <button type="button" class="btn btn-primary" th:onclick="'startTest(\'/group/' + ${groupId} + '/test/' + ${testId} + '\')'">Start Test</button>
+                    </div>
+                    <form th:if="${lastQuestion != null}" id="answerForm" th:action="${'/answer/' + lastQuestion.getId()}" method="patch">
+                        <h4>Questions</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <span th:text="${lastQuestion.getQuestion().getQuestion()}"></span>
+                                <div class="form-check" th:each="answer : ${lastQuestion.getQuestion().getAnswers()}">
+                                    <input
+                                        class="form-check-input"
+                                        required
+                                        type="checkbox"
+                                        th:id="'answer_' + ${answer.getId()}"
+                                        th:name="'question_' + ${lastQuestion.getId()}"
+                                        th:value="${answer.getId()}"
+                                    >
+                                    <label class="form-check-label" th:for="'answer_' + ${answer.getId()}" th:text="${answer.getAnswer()}"></label>
+                                </div>
+                            </li>
+                        </ul>
+                        <button type="button" class="btn btn-primary" onclick="submitForm(event)">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
+        <script th:inline="javascript">
+
+            const startTest = (request) => {
+                axios.post(request)
+                    .then(res => {
+                        console.log(res);
+                        window.location.reload();
+                    })
+                    .catch(err => console.error(err))
+            }
+
+            function submitForm(event) {
+                event.preventDefault();
+
+                var form = document.getElementById('answerForm');
+                var formData = new FormData(form);
+
+                const valuesArray = [];
+
+                formData.forEach((value, key) => {
+                    valuesArray.push(value);
+                });
+
+                if (valuesArray.length <= 0) {
+                    alert("Musisz zaznaczyć odpowiedź.");
+                    return;
+                }
+
+                axios.patch(form.action, valuesArray)
+                    .then(res => {
+                        console.log(res);
+                        alert(1);
+                        window.location.reload();
+                    })
+                    .then(err => {
+                        console.error(err);
+                    })
+
+                // fetch(form.action, {
+                //     method: 'PATCH',
+                //     body: JSON.stringify(valuesArray)
+                // }).then(response => {
+                //     if (response.ok) {
+                //         console.log('Form submitted successfully');
+                //         window.location.reload();
+                //     } else {
+                //         console.error('Form submission failed');
+                //     }
+                // }).catch(error => {
+                //     console.error('Error during form submission:', error);
+                // });
+            }
+        </script>
     </body>
-
-
-
 </html>

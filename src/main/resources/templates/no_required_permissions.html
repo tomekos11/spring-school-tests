@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/head :: head"></head>
+
+    <body>
+        <div th:replace="fragments/navbar :: nav(user=${user})"></div>
+        <div class="container mt-5">
+            <div class="jumbotron">
+                <h1 class="display-4">Brak wymaganych uprawnień</h1>
+                <p class="lead">Przepraszamy, ale nie masz wystarczających uprawnień do dostępu do tej strony.</p>
+                <hr class="my-4">
+                <p>Skontaktuj się z administratorem systemu w celu uzyskania dalszej pomocy.</p>
+                <a class="btn btn-primary btn-lg" href="/" role="button">Powrót do strony głównej</a>
+            </div>
+        </div>
+    </body>
+</html>

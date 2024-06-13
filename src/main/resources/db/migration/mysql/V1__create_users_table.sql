@@ -11,6 +11,6 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (indeks, username, password, role, name, surname) VALUES
-   (1, 'admin', 'password', 'ADMIN', 'Tomasz', 'Słapiński'),
+   (1, 'admin', 'Adminadmin123', 'ADMIN', 'Tomasz', 'Słapiński'),
    (169618, 'tom', '123', 'USER', 'Tom', 'S');
 
