@@ -13,7 +13,18 @@
                     <p th:text="${#temporals.format(groupTest.getBeginDate(), 'dd MMMM yyyy') + ' ' + #temporals.format(groupTest.getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(groupTest.getEndDate(), 'HH:mm')}">Start Date</p>
                 </div>
                 <div class="card-body">
-                    <div th:if="${lastQuestion == null}">
+                    <div class="card-header">Twoje odpowiedzi</div>
+                    <div class="card-body" th:if="${alreadyAnsweredQuestions.size() == userTest.getTest().getQuestions().size()}">
+                        <div th:each="answer : ${alreadyAnsweredQuestions}">
+                            <div th:text="${answer.getQuestion().getContent()}"></div>
+                            <div th:each="possibility : ${answer.getQuestion().getAnswers()}">
+                                <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${possibility.getIsCorrect()}"
+                                       th:class="${possibility.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect'}">
+                                <label class="form-check-label" for="check" th:text="${possibility.getAnswer()}"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${lastQuestion == null && alreadyAnsweredQuestions.size() != userTest.getTest().getQuestions().size()}">
                         <p>
                             <span>
                                 Czy chcesz rozpocząć test&nbsp;
@@ -85,5 +96,37 @@
                     })
             }
         </script>
+
+        <style>
+            /* Dodaj style dla poprawnych odpowiedzi */
+            .checkbox-correct + .form-check-label::before {
+                background-color: green;
+            }
+
+            /* Dodaj style dla niepoprawnych odpowiedzi */
+            .checkbox-incorrect + .form-check-label::before {
+                background-color: red;
+            }
+
+            /* Upewnij się, że standardowy styl checkboxa jest ukryty */
+            input[type="checkbox"].form-check-input {
+                display: none;
+            }
+
+            /* Stylizacja dla niestandardowego checkboxa */
+            .form-check-label::before {
+                content: '';
+                display: inline-block;
+                width: 1rem;
+                height: 1rem;
+                border: 1px solid #ccc;
+                margin-right: 0.5rem;
+                vertical-align: middle;
+            }
+
+            input[type="checkbox"].form-check-input:checked + .form-check-label::before {
+                background-color: #0d6efd; /* Zmień ten kolor na cokolwiek chcesz */
+            }
+        </style>
     </body>
 </html>

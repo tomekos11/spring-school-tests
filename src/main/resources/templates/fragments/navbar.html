@@ -47,16 +47,10 @@
                         <div th:text="${user.indeks}"></div>
                     </li>
                     <li>
-                        <a href="/profile">Twój Profil</a>
-                    </li>
-                    <li>
                         <a th:if="${user.role == 'ADMIN'}" href="/tests/create">Stwórz test</a>
                     </li>
                     <li>
                         <a th:if="${user.role == 'ADMIN'}" href="/tests/manage">Zarządzaj testami</a>
-                    </li>
-                    <li>
-                        <a th:if="${user.role == 'ADMIN'}" href="/tests">Twoje testy</a>
                     </li>
                     <li>
                         <a style="cursor: pointer" onclick="logout()">Wyloguj</a>

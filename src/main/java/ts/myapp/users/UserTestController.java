@@ -1,6 +1,7 @@
 package ts.myapp.users;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,6 @@ public class UserTestController {
     public String test(Model model, @PathVariable Long groupId, @PathVariable Long testId) throws JsonProcessingException {
         User user = userService.me();
 
-        String serializedUser = objectMapper.writeValueAsString(user);
-        User deserializedUser = objectMapper.readValue(serializedUser, User.class);
-
-        model.addAttribute("user", deserializedUser);
-
         List<Group> groups = user.getGroups().stream().map(el -> el.getGroup()).toList();
 
         System.out.println(objectMapper.writeValueAsString(groups));
@@ -81,6 +77,10 @@ public class UserTestController {
                 .filter(answer -> testQuestions.stream().anyMatch(question -> question.equals(answer.getQuestion())))
                 .findFirst().orElse(null);
 
+        List<UserAnswer> alreadyAnsweredQuestions = user.getAnswers().stream()
+                .filter(answer -> testQuestions.stream().anyMatch(question -> question.equals(answer.getQuestion())))
+                        .toList();
+
         System.out.println(objectMapper.writeValueAsString(lastQuestion));
 //        userAnswersWithoutAnswerGiven.stream().filter()
 
@@ -90,13 +90,18 @@ public class UserTestController {
         String serializedGroupTest = objectMapper.writeValueAsString(groupTest);
         GroupTest deserializedGroupTest = objectMapper.readValue(serializedGroupTest, GroupTest.class);
 
+        String serializedAlreadyAnsweredQuestions = objectMapper.writeValueAsString(alreadyAnsweredQuestions);
+        List<UserAnswer> deserializedAlreadyAnsweredQuestions = objectMapper.readValue(serializedAlreadyAnsweredQuestions, new TypeReference<List<UserAnswer>>() {});
+
+        String serializedUser = objectMapper.writeValueAsString(user);
+        User deserializedUser = objectMapper.readValue(serializedUser, User.class);
+
+        model.addAttribute("user", deserializedUser);
         model.addAttribute("userTest", deserializedUserTest);
         model.addAttribute("groupTest", deserializedGroupTest);
+        model.addAttribute("alreadyAnsweredQuestions", deserializedAlreadyAnsweredQuestions);
 
         if (lastQuestion != null) {
-//            String serializedLastNotAnsweredQuestion = objectMapper.writeValueAsString(lastQuestion);
-//            UserAnswer deserializedLastNotAnsweredQuestion = objectMapper.readValue(serializedLastNotAnsweredQuestion, UserAnswer.class);
-//            model.addAttribute("lastQuestion", deserializedLastNotAnsweredQuestion);
             model.addAttribute("lastQuestion", lastQuestion);
         } else {
             System.out.println("Użytkownik nie dał jeszcze żadnej odpowiedzi");
