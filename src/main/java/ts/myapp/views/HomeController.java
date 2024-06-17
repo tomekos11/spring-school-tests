@@ -21,10 +21,6 @@ import java.util.List;
 
 @Controller
 public class HomeController {
-    @Autowired
-    private TestController testController;
-    @Autowired
-    private UserRepository userRepository;
 
     private final ObjectMapper objectMapper;
     @Autowired

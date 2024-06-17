@@ -54,7 +54,7 @@ public class User {
     private List<UserTest> tests;
 
     @JsonIgnore
-    public List<Long> getGroupNames () {
-        return this.getGroups().stream().map(el -> el.getGroup().getId()).toList();
+    public List<Group> getGroupNames () {
+        return this.getGroups().stream().map(el -> el.getGroup()).toList();
     }
 }

@@ -46,7 +46,7 @@ public class UserService {
 
         System.out.println(userTest.getBeginDate());
 
-        if (userTest == null || userTest.getBeginDate() != null || !user.getGroupNames().contains(groupTest.getGroup().getId())) {
+        if (userTest == null || userTest.getBeginDate() != null || !user.getGroupNames().contains(groupTest.getGroup())) {
             System.out.println("blad user service 1");
             return false;
         }

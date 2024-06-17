@@ -26,7 +26,7 @@
                         <h4>Questions</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <span th:text="${lastQuestion.getQuestion().getQuestion()}"></span>
+                                <span th:text="${lastQuestion.getQuestion().getContent()}"></span>
                                 <div class="form-check" th:each="answer : ${lastQuestion.getQuestion().getAnswers()}">
                                     <input
                                         class="form-check-input"
@@ -83,20 +83,6 @@
                     .then(err => {
                         console.error(err);
                     })
-
-                // fetch(form.action, {
-                //     method: 'PATCH',
-                //     body: JSON.stringify(valuesArray)
-                // }).then(response => {
-                //     if (response.ok) {
-                //         console.log('Form submitted successfully');
-                //         window.location.reload();
-                //     } else {
-                //         console.error('Form submission failed');
-                //     }
-                // }).catch(error => {
-                //     console.error('Error during form submission:', error);
-                // });
             }
         </script>
     </body>

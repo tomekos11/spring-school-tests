@@ -23,7 +23,7 @@ public class Question {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
-    private String question;
+    private String content;
 
     @Column(name="point_amount")
     private Integer pointAmount;

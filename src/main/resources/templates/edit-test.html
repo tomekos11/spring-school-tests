@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head"></head>
+
+<body>
+<div th:replace="fragments/navbar :: nav(user=${user})"></div>
+
+<div class="container mt-5">
+
+    <div class="card">
+        <div class="card-header">
+            <h2 th:text="${'Edycja testu Nr' + test.getId()}"></h2>
+        </div>
+        <div class="card-body">
+            <h4 class="text-success" th:text="${message}"></h4>
+            <form th:action="@{/api/tests/{testId}(testId=${test.getId()})}" th:object="${test}" id="edit-test-form">
+                <div class="form-group">
+                    <label for="name">Nazwa Testu</label>
+                    <input type="text" class="form-control" id="name" name="name" th:value="${test.getName()}" placeholder="Wprowadź nazwę testu" required>
+                </div>
+                <div class="form-group">
+                    <label for="alias">Alias Testu</label>
+                    <input type="text" class="form-control" id="alias" name="alias" th:value="${test.getAlias()}" placeholder="Wprowadź alias testu" required>
+                </div>
+                <button class="btn btn-primary" onclick="changeTestDetails(event)">Zapisz zmiany</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista pytań -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Lista pytań</h4>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="questionsAccordion">
+                <!-- Iteracja po każdym pytaniu -->
+                <div th:each="question, questionIndex : ${test.getQuestions()}" class="accordion-item">
+                    <h2 class="accordion-header" th:attr="id='heading' + ${questionIndex.index}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${questionIndex.index}" aria-expanded="false" th:aria-controls="'collapse' + ${questionIndex.index}">
+                            <span th:text="${question.getContent()}"></span>
+                        </button>
+                    </h2>
+                    <div th:id="'collapse' + ${questionIndex.index}" class="accordion-collapse collapse" th:attr="aria-labelledby='heading' + ${questionIndex.index}" data-bs-parent="#questionsAccordion">
+                        <div class="accordion-body">
+                            <!-- Formularz dodawania odpowiedzi -->
+                            <form th:action="@{/api/tests/{testId}/questions/{questionId}/answers(testId=${test.getId()}, questionId=${question.getId()})}" method="post" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="points">Liczba punktów</label>
+                                    <input type="number" th:value="${question.getPointAmount()}" class="form-control" id="points" name="points" min="0" required>
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label for="image">Załącz zdjęcie</label>
+                                    <input type="file" class="form-control-file" id="image" name="image">
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>Odpowiedzi</label>
+                                    <table class="table table-striped table-dark">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-center">Odpowiedź</th>
+                                            <th class="text-center">Poprawność</th>
+                                            <th class="text-center">Akcja</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="answersTable">
+                                        <tr th:each="answer, answerIndex : ${question.getAnswers()}" th:attr="data-answer-index=${answerIndex.index}">
+                                            <td class="text-center">
+                                                <input type="text" class="form-control" th:value="${answer.getAnswer()}" required>
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="checkbox" th:checked="${answer.getIsCorrect()}" class="form-check-input" th:id="'correct-' + ${answer.getId()}" name="correct">
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-danger" type="button" onclick="removeRow(this)">Usuń</button>
+                                            </td>
+                                        </tr>
+                                        <!-- Placeholder row for no answers -->
+                                        <tr id="noAnswersRow" class="d-none">
+                                            <td class="text-center" colspan="3">Brak dodanych do tej pory odpowiedzi</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <button class="btn btn-primary mt-2" type="button" onclick="addAnswer()">Dodaj odpowiedź</button>
+                                    <button class="btn btn-success mt-2" onclick="changeQuestionDetails(event)">Zapisz zmiany</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-2" type="button" onclick="addQuestion(test)">Dodaj pytanie do testu</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+
+    var testData = [[${testData}]];
+
+    console.log(testData);
+
+    function addQuestion(test) {
+        var accordion = document.getElementById('questionsAccordion');
+        var questionIndex = accordion.querySelectorAll('.accordion-item').length;
+
+        // Create new question HTML
+        var newQuestionHTML = `
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading${questionIndex}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${questionIndex}" aria-expanded="false" aria-controls="collapse${questionIndex}">
+                        Nowe pytanie
+                    </button>
+                </h2>
+                <div id="collapse${questionIndex}" class="accordion-collapse collapse" aria-labelledby="heading${questionIndex}" data-bs-parent="#questionsAccordion">
+                    <div class="accordion-body">
+                        <!-- Formularz dodawania odpowiedzi -->
+                        <form th:action="@{/api/tests/{testId}/questions/{questionId}/answers(testId=${test.getId()}, questionId=${question.getId()})}" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="points">Liczba punktów</label>
+                                <input type="number" class="form-control" id="points" name="points" min="0" required>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="image">Załącz zdjęcie</label>
+                                <input type="file" class="form-control-file" id="image" name="image">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label>Odpowiedzi</label>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Odpowiedź</th>
+                                            <th class="text-center">Poprawność</th>
+                                            <th class="text-center">Akcja</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="answersTable${questionIndex}">
+                                        <!-- Placeholder row for no answers -->
+                                        <tr id="noAnswersRow${questionIndex}" class="d-none">
+                                            <td class="text-center" colspan="3">Brak dodanych do tej pory odpowiedzi</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-primary mt-2" type="button" onclick="addAnswer()">Dodaj odpowiedź</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Append new question to accordion
+        accordion.insertAdjacentHTML('beforeend', newQuestionHTML);
+    }
+
+    function removeRow(button) {
+        // Find the row containing the button and remove it
+        var row = button.closest('tr');
+        row.parentNode.removeChild(row);
+        checkAnswers();
+    }
+
+    function addAnswer() {
+        var tbody = document.getElementById('answersTable');
+        var noAnswersRow = document.getElementById('noAnswersRow');
+
+        // Create the answers table if it doesn't exist
+        if (!tbody) {
+            tbody = document.createElement('tbody');
+            tbody.id = 'answersTable';
+            var table = document.getElementById('answersTableWrapper');
+            table.appendChild(tbody);
+        }
+
+        // If no answers, add the first row
+        if (tbody.rows.length <= 1) {
+            var newRow = createAnswerRow();
+            tbody.appendChild(newRow);
+        } else {
+            // Clone the template row if it exists
+            var templateRow = tbody.querySelector('tr[data-answer-index="0"]');
+            if (templateRow) {
+                var newRow = templateRow.cloneNode(true);
+                tbody.appendChild(newRow);
+            } else {
+                console.error("Template row not found.");
+            }
+        }
+
+        checkAnswers();
+    }
+
+    function createAnswerRow() {
+        var newRow = document.createElement('tr');
+        newRow.setAttribute('data-answer-index', '0');
+
+        var answerCell = document.createElement('td');
+        var answerInput = document.createElement('input');
+        answerInput.setAttribute('type', 'text');
+        answerInput.setAttribute('class', 'form-control');
+        answerInput.setAttribute('name', 'answers');
+        answerCell.appendChild(answerInput);
+        newRow.appendChild(answerCell);
+
+        var correctnessCell = document.createElement('td');
+        correctnessCell.setAttribute('class', 'text-center')
+        var correctnessCheckbox = document.createElement('input');
+        correctnessCheckbox.setAttribute('type', 'checkbox');
+        correctnessCheckbox.setAttribute('class', 'form-check-input');
+        correctnessCheckbox.setAttribute('name', 'correct');
+        correctnessCell.appendChild(correctnessCheckbox);
+        newRow.appendChild(correctnessCell);
+
+        var deleteCell = document.createElement('td');
+        var deleteButton = document.createElement('button');
+        deleteButton.setAttribute('type', 'button');
+        deleteButton.setAttribute('class', 'btn btn-danger btn-sm');
+        deleteButton.setAttribute('onclick', 'removeRow(this)');
+        deleteButton.textContent = 'Usuń';
+        deleteCell.appendChild(deleteButton);
+        newRow.appendChild(deleteCell);
+
+        return newRow;
+    }
+
+    function checkAnswers() {
+        var tbody = document.getElementById('answersTable');
+        var rows = tbody.querySelectorAll('tr');
+        var noAnswersRow = document.getElementById('noAnswersRow');
+
+        // Check if there are no answer rows left
+        if (rows.length === 0 || (rows.length === 1 && noAnswersRow.classList.contains('d-none'))) {
+            noAnswersRow.classList.remove('d-none');
+        } else {
+            noAnswersRow.classList.add('d-none');
+        }
+    }
+
+    function changeTestDetails(event) {
+        event.preventDefault();
+
+        var form = document.getElementById('edit-test-form');
+        var formData = new FormData(form);
+
+        axios.patch(form.action, formData)
+            .then(res => {
+                document.querySelector("html").innerHTML = res.data;
+            })
+            .then(err => {
+                console.error(err);
+            })
+    }
+
+    function changeQuestionDetails(event) {
+        event.preventDefault();
+
+        var form = document.getElementById('edit-test-form');
+        var formData = new FormData(form);
+
+        axios.patch(form.action, formData)
+            .then(res => {
+                document.querySelector("html").innerHTML = res.data;
+            })
+            .then(err => {
+                console.error(err);
+            })
+    }
+
+</script>
+</body>
+</html>
