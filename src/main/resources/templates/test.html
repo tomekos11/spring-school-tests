@@ -13,14 +13,18 @@
                     <p th:text="${#temporals.format(groupTest.getBeginDate(), 'dd MMMM yyyy') + ' ' + #temporals.format(groupTest.getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(groupTest.getEndDate(), 'HH:mm')}">Start Date</p>
                 </div>
                 <div class="card-body">
-                    <div class="card-header">Twoje odpowiedzi</div>
-                    <div class="card-body" th:if="${alreadyAnsweredQuestions.size() == userTest.getTest().getQuestions().size()}">
-                        <div th:each="answer : ${alreadyAnsweredQuestions}">
-                            <div th:text="${answer.getQuestion().getContent()}"></div>
-                            <div th:each="possibility : ${answer.getQuestion().getAnswers()}">
-                                <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${possibility.getIsCorrect()}"
-                                       th:class="${possibility.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect'}">
-                                <label class="form-check-label" for="check" th:text="${possibility.getAnswer()}"></label>
+                    <div th:text="${alreadyAnsweredQuestions.size()}"></div>
+                    <div th:text="${userTest.getTest().getQuestions().size()}"></div>
+                    <div class="card" th:if="${alreadyAnsweredQuestions.size() == userTest.getTest().getQuestions().size()}">
+                        <div class="card-header">Twoje odpowiedzi</div>
+                        <div class="card-body">
+                            <div th:each="answer : ${alreadyAnsweredQuestions}">
+                                <div th:text="${answer.getQuestion().getContent()}"></div>
+                                <div th:each="possibility : ${answer.getQuestion().getAnswers()}">
+                                    <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${possibility.getIsCorrect()}"
+                                           th:class="${possibility.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect'}">
+                                    <label class="form-check-label" for="check" th:text="${possibility.getAnswer()}"></label>
+                                </div>
                             </div>
                         </div>
                     </div>

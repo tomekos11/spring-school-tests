@@ -13,7 +13,7 @@
                         <h5 class="card-title">Twoje wyniki</h5>
                         <p class="card-text">Tutaj możesz umieścić informacje o twoich wynikach.</p>
                         <div th:each="test : ${user.getTests()}">
-                            <div th:if="${test.getBeginDate().isBefore(#temporals.createNow())}" class="d-flex flex-column justify-content-around border border-black-50 rounded p-2">
+                            <div th:if="${test.getBeginDate() != null && test.getBeginDate().isBefore(#temporals.createNow())}" class="d-flex flex-column justify-content-around border border-black-50 rounded p-2">
                                 <p class="card-text" th:text="${test.getTest().getName()}"></p>
                                 <p class="card-text" th:text="${#temporals.format(test.getBeginDate(), 'dd MMMM yyyy')}"></p>
                                 <p class="card-text" th:text="${'Ilosc punktow: ' + test.getPointAmount() +' / '+ test.getTest().getQuestions().size()}"></p>

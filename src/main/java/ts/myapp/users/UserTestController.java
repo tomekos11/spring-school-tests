@@ -78,7 +78,7 @@ public class UserTestController {
                 .findFirst().orElse(null);
 
         List<UserAnswer> alreadyAnsweredQuestions = user.getAnswers().stream()
-                .filter(answer -> testQuestions.stream().anyMatch(question -> question.equals(answer.getQuestion())))
+                .filter(answer -> answer.getIsCorrect() != null && testQuestions.stream().anyMatch(question -> question.equals(answer.getQuestion())))
                         .toList();
 
         System.out.println(objectMapper.writeValueAsString(lastQuestion));
