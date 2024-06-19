@@ -1,6 +1,7 @@
 package ts.myapp.groups;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,12 +36,15 @@ public class GroupController {
         String serializedUser = objectMapper.writeValueAsString(currentUser);
         User deserializedUser = objectMapper.readValue(serializedUser, User.class);
 
-        List<Group> groups = groupRepository.findAll();
+        List<Group> groups = groupRepository.findAll().stream().toList();
+
+        String serializedGroups = objectMapper.writeValueAsString(groups);
+        List<Group> deserializedGroups = objectMapper.readValue(serializedGroups, new TypeReference<List<Group>>() {});
 
         ModelAndView modelAndView = new ModelAndView("groups-manage");
 
         modelAndView.addObject("user", deserializedUser);
-        modelAndView.addObject("groups", groups);
+        modelAndView.addObject("groups", deserializedGroups);
 
         return modelAndView;
     }
