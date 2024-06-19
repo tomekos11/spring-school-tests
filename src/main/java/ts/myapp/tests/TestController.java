@@ -7,15 +7,23 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import ts.myapp.answers.Answer;
+import ts.myapp.answers.repositories.AnswerRepository;
+import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
+import ts.myapp.questions.Question;
 import ts.myapp.services.UserService;
 import ts.myapp.users.User;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class TestController {
@@ -28,6 +36,10 @@ public class TestController {
     private final ObjectMapper objectMapper;
     @Autowired
     private TestRepository testRepository;
+    @Autowired
+    private AnswerRepository answerRepository;
+    @Autowired
+    private AnswerUserAnswerRepository answerUserAnswerRepository;
 
     public TestController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -99,13 +111,15 @@ public class TestController {
 
         modelAndView.addObject("user", deserializedUser);
         modelAndView.addObject("test", deserializedTest);
+        modelAndView.addObject("answerMaxId", answerRepository.findMaxId());
 
 
         return modelAndView;
     }
 
+    @Transactional
     @PatchMapping("/api/tests/{id}")
-    public ModelAndView editTest(@PathVariable Long id, @RequestParam("name") String name, @RequestParam("alias") String alias, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
+    public ModelAndView editTest(@PathVariable Long id, @RequestParam("test") String rqTest, Model model, RedirectAttributes redirectAttributes, MultipartFile image) throws JsonProcessingException {
         User user = userService.me();
 
         String serializedUser = objectMapper.writeValueAsString(user);
@@ -119,9 +133,16 @@ public class TestController {
             return modelAndView;
         }
 
-        test.setName(name);
-        test.setAlias(alias);
-        testRepository.save(test);
+        Test jsonRqTest = objectMapper.readValue(rqTest, Test.class);
+//        dodaj odpowiedzi do bazy
+
+        testService.updateAnswers(jsonRqTest);
+
+
+//        test.setName(jsonRqTest.getName());
+//        test.setAlias(jsonRqTest.getAlias());
+//        test.setQuestions(jsonRqTest.getQuestions());
+//        testRepository.save(test);
 
         String serializedTest = objectMapper.writeValueAsString(test);
         Test deserializedTest = objectMapper.readValue(serializedTest, Test.class);

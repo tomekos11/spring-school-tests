@@ -126,10 +126,14 @@
                 border: 1px solid #ccc;
                 margin-right: 0.5rem;
                 vertical-align: middle;
+                text-align: center;
+                line-height: 1rem;
             }
 
             input[type="checkbox"].form-check-input:checked + .form-check-label::before {
                 background-color: #0d6efd; /* Zmień ten kolor na cokolwiek chcesz */
+                content: '\2713'; /* Użyj znaku check (✓) */
+                color: white;
             }
         </style>
     </body>

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import ts.myapp.groups.GroupTest;
 import ts.myapp.questions.Question;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -35,8 +36,8 @@ public class Answer {
 
     //    hidden-relations
     @JsonIgnore
-    @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<AnswerUserAnswer> userAnswers;
+    @OneToMany(mappedBy = "answer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<AnswerUserAnswer> userAnswers = new ArrayList<>();
 
 
 }
