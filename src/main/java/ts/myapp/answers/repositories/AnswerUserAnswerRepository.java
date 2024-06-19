@@ -13,5 +13,9 @@ public interface AnswerUserAnswerRepository extends JpaRepository<AnswerUserAnsw
 
     @Modifying
     @Query("DELETE FROM AnswerUserAnswer aua WHERE aua.answer.id = :answerId")
-    void deleteAnswerUserAnswerByAnswerId(@Param("answerId") Long answerId);
+    void deleteByAnswerId(@Param("answerId") Long answerId);
+
+    @Modifying
+    @Query("DELETE FROM AnswerUserAnswer aua WHERE aua.answer.question.id = :id")
+    void deleteByQuestionId(@Param("id") Long id);
 }

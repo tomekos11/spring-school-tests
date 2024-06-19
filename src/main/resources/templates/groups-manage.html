@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head"></head>
+
+<body>
+<div th:replace="fragments/navbar :: nav(user=${user})"></div>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Group List</h1>
+        <div class="accordion" id="groupsAccordion">
+            <div th:each="group, groupStat : ${groups}">
+                <div class="card">
+                    <div class="card-header" id="headingGroup[[${groupStat.index}]]">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseGroup[[${groupStat.index}]]" aria-expanded="true"
+                                    aria-controls="collapseGroup[[${groupStat.index}]]">
+                                <span th:text="${group.getName()}">Group Name</span>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseGroup[[${groupStat.index}]]" class="collapse" aria-labelledby="headingGroup[[${groupStat.index}]]" data-parent="#groupsAccordion">
+                        <div class="card-body">
+                            <p>Type: <span th:text="${group.getType()}">Group Type</span></p>
+                            <p>Year: <span th:text="${group.getYear()}">Group Year</span></p>
+                            <p>Season: <span th:text="${group.getSeason()}">Group Season</span></p>
+                            <div class="accordion" id="usersAccordion[[${groupStat.index}]]">
+                                <div th:each="user, userStat : ${group.getUsers()}">
+                                    <div class="card">
+                                        <div class="card-header" id="headingUser[[${groupStat.index}]]-[[${userStat.index}]]">
+                                            <h2 class="mb-0">
+                                                <button class="btn btn-link" type="button" data-toggle="collapse"
+                                                        data-target="#collapseUser[[${groupStat.index}]]-[[${userStat.index}]]" aria-expanded="true"
+                                                        aria-controls="collapseUser[[${groupStat.index}]]-[[${userStat.index}]]">
+                                                    <span th:text="${user.getIndeks()}">User Name</span>
+                                                </button>
+                                            </h2>
+                                        </div>
+                                        <div id="collapseUser[[${groupStat.index}]]-[[${userStat.index}]]" class="collapse" aria-labelledby="headingUser[[${groupStat.index}]]-[[${userStat.index}]]" data-parent="#usersAccordion[[${groupStat.index}]]">
+                                            <div class="card-body">
+                                                <ul>
+                                                    <li th:each="test : ${user.getTests()}" th:text="${test}">Test Name</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script th:inline="javascript">
+
+</script>
+
+</body>
+</html>

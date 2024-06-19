@@ -53,6 +53,9 @@
                         <a th:if="${user.role == 'ADMIN'}" href="/tests/manage">Zarządzaj testami</a>
                     </li>
                     <li>
+                        <a th:if="${user.role == 'ADMIN'}" href="/groups/manage">Zarządzaj grupami</a>
+                    </li>
+                    <li>
                         <a style="cursor: pointer" onclick="logout()">Wyloguj</a>
                     </li>
                 </ul>

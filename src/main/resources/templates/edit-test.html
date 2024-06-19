@@ -39,7 +39,7 @@
             </button>
         </div>
     </div>
-
+</div>
 <script th:inline="javascript">
 
     var testData = [[${test}]];
@@ -91,7 +91,7 @@
 
         // Create new question HTML
         var newQuestionHTML = `
-        <div class="accordion-item">
+        <div class="accordion-item" id="accordion${question.id}">
             <h2 class="accordion-header" id="heading${index}">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
                     <span id="accordionTitle${index}">${question.content}</span>
@@ -130,7 +130,8 @@
                             </tbody>
                         </table>
                         <button class="btn btn-primary mt-2" type="button" onclick="createAnswerRowWithoutId(${question.id})">Dodaj odpowiedź</button>
-                        <button class="btn btn-success mt-2" type="button" onclick="changeQuestionDetails(event)">Zapisz zmiany</button>
+                        <button class="btn btn-success mt-2" type="button" onclick="changeTestDetails()"> Zapisz zmiany </button>
+                        <button class="btn btn-danger mt-2" type="button" onclick="deleteQuestion(${question.id})">Usuń</button>
                     </div>
                 </div>
             </div>
@@ -361,19 +362,15 @@
             })
     }
 
-    function changeQuestionDetails(event) {
-        event.preventDefault();
+    function deleteQuestion(questionId) {
+        const qId = testData.questions.findIndex(el => el.id === questionId);
 
-        var form = document.getElementById('edit-test-form');
-        var formData = new FormData(form);
-
-        axios.patch(form.action, formData)
-            .then(res => {
-                document.querySelector("html").innerHTML = res.data;
-            })
-            .then(err => {
-                console.error(err);
-            })
+        const questionToDelete = document.getElementById(`accordion${questionId}`);
+        if (questionToDelete) {
+            questionToDelete.parentNode.removeChild(questionToDelete);
+            testData.questions.splice(qId, 1);
+            changeTestDetails();
+        }
     }
 
     document.addEventListener('DOMContentLoaded', initializePage);

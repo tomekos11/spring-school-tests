@@ -19,7 +19,11 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     @Modifying
     @Query("DELETE FROM Answer a WHERE a.id = :id")
-    void deleteAnswerById(@Param("id") Long id);
+    void deleteById(@Param("id") Long id);
+
+    @Modifying
+    @Query("DELETE FROM Answer a WHERE a.question.id = :id")
+    void deleteByQuestionId(@Param("id") Long id);
 
     @Query("SELECT MAX(a.id) FROM Answer a")
     Long findMaxId();

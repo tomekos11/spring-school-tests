@@ -144,11 +144,6 @@ public class TestController {
 //        dodaj / zaktualizuj / usun pytania
         testService.updateQuestions(jsonRqTest, image);
 
-//        test.setName(jsonRqTest.getName());
-//        test.setAlias(jsonRqTest.getAlias());
-//        test.setQuestions(jsonRqTest.getQuestions());
-//        testRepository.save(test);
-
         String serializedTest = objectMapper.writeValueAsString(test);
         Test deserializedTest = objectMapper.readValue(serializedTest, Test.class);
 

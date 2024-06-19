@@ -93,13 +93,13 @@ public class TestService {
 
         List<Long> answerIdsToDelete = testAnswersIds.stream()
                 .filter(element -> !newTestAnswersIds.contains(element))
-                .collect(Collectors.toList());
+                .toList();
 
 
 //        usuwanie answerów
         answerIdsToDelete.stream().forEach(idToDelete -> {
-            answerUserAnswerRepository.deleteAnswerUserAnswerByAnswerId(idToDelete);
-            answerRepository.deleteAnswerById(idToDelete);
+            answerUserAnswerRepository.deleteByAnswerId(idToDelete);
+            answerRepository.deleteById(idToDelete);
         });
 
         return true;
@@ -141,11 +141,22 @@ public class TestService {
                             newAnswer.setIsCorrect(el.getIsCorrect());
                             newAnswer.setAnswer(el.getAnswer());
                             answerRepository.save(newAnswer);
-//                            newQuestionAnswers.add(newAnswer);
                         });
                     }
+                    newTestQuestionIds.add(question.getId());
                 });
 
+        List<Long> questionIdsToDelete = testQuestionIds.stream()
+            .filter(element -> !newTestQuestionIds.contains(element))
+                    .toList();
+
+
+//        usuwanie pytan
+        questionIdsToDelete.stream().forEach(idToDelete -> {
+            answerUserAnswerRepository.deleteByQuestionId(idToDelete);
+            answerRepository.deleteByQuestionId(idToDelete);
+            questionRepository.deleteById(idToDelete);
+        });
 
         return true;
     }
