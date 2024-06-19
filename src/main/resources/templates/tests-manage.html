@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head th:replace="fragments/head :: head"></head>
+
+    <body>
+        <div th:replace="fragments/navbar :: nav(user=${user})"></div>
+
+        <div class="container mt-t">
+            <h1>Zarządzanie testami</h1>
+
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nazwa</th>
+                    <th>Alias</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="test : ${tests}">
+                    <td th:text="${test.getId()}"></td>
+                    <td th:text="${test.getName()}"></td>
+                    <td th:text="${test.getAlias()}"></td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <a th:href="${'/tests/'+test.getId()}" type="button" class="btn btn-primary">Edytuj</a>
+                            <button type="button" class="btn btn-danger">Usuń</button>
+                            <button type="button" class="btn btn-secondary">Inna akcja</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </body>
+</html>
