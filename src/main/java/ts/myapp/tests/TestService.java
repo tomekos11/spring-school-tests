@@ -7,9 +7,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ts.myapp.answers.Answer;
 import ts.myapp.answers.repositories.AnswerRepository;
 import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
+import ts.myapp.questions.Question;
+import ts.myapp.questions.QuestionRepository;
 import ts.myapp.services.ApiResponse;
 import org.json.JSONObject;
 
@@ -26,6 +29,8 @@ public class TestService {
     private AnswerRepository answerRepository;
     @Autowired
     private AnswerUserAnswerRepository answerUserAnswerRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     public JSONObject createTest(String name, String alias) throws JSONException {
 
@@ -55,6 +60,10 @@ public class TestService {
 
         List<Long> newTestAnswersIds = new ArrayList<>();
 
+        List<Question> testQuestions = questionRepository.findQuestionsByTestId(newTest.getId());
+        List<Long> testQuestionIds = testQuestions.stream().map(el -> el.getId()).toList();
+
+
         newTest.getQuestions().stream()
                 .forEach(question -> {
                     question.getAnswers().stream()
@@ -68,7 +77,7 @@ public class TestService {
                                         asnwerToUpdate.setAnswer(answer.getAnswer());
                                         answerRepository.save(asnwerToUpdate);
                                     }
-                                } else {
+                                } else if (testQuestionIds.contains(question.getId())) {
 //                                    tworzenie nowej odpowiedzi
                                     Answer newAnswer = new Answer();
                                     newAnswer.setQuestion(question);
@@ -92,6 +101,51 @@ public class TestService {
             answerUserAnswerRepository.deleteAnswerUserAnswerByAnswerId(idToDelete);
             answerRepository.deleteAnswerById(idToDelete);
         });
+
+        return true;
+    }
+
+    public Boolean updateQuestions(Test newTest, MultipartFile image) {
+
+        List<Question> testQuestions = questionRepository.findQuestionsByTestId(newTest.getId());
+        List<Long> testQuestionIds = testQuestions.stream().map(el -> el.getId()).toList();
+
+        List<Long> newTestQuestionIds = new ArrayList<>();
+
+        newTest.getQuestions().stream()
+                .forEach(question -> {
+                    System.out.println(question);
+                    if (testQuestionIds.contains(question.getId())) {
+                        Question questionToUpdate = testQuestions.stream().filter(el ->el.getId().equals(question.getId())).findFirst().orElse(null);
+                        if (questionToUpdate != null) {
+                            questionToUpdate.setContent(question.getContent());
+                            questionToUpdate.setImage("TODO");
+                            questionToUpdate.setPointAmount(question.getPointAmount());
+                            questionRepository.save(questionToUpdate);
+                        }
+                    } else {
+                        Question newQuestion = new Question();
+
+                        newQuestion.setTest(testQuestions.getLast().getTest());
+                        newQuestion.setAnswers(new ArrayList<>());
+                        newQuestion.setContent(question.getContent());
+                        newQuestion.setImage("TODO");
+                        newQuestion.setPointAmount(question.getPointAmount());
+                        questionRepository.save(newQuestion);
+
+                        System.out.println("Dodaje nowe odpowiedzi");
+                        question.getAnswers().forEach(el -> {
+                            Answer newAnswer = new Answer();
+                            newAnswer.setId(el.getId());
+                            newAnswer.setQuestion(newQuestion);
+                            newAnswer.setIsCorrect(el.getIsCorrect());
+                            newAnswer.setAnswer(el.getAnswer());
+                            answerRepository.save(newAnswer);
+//                            newQuestionAnswers.add(newAnswer);
+                        });
+                    }
+                });
+
 
         return true;
     }

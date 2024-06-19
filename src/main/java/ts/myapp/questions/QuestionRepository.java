@@ -9,6 +9,9 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    @Query("SELECT q FROM Question q WHERE q.test = :testId")
+    @Query("SELECT q FROM Question q WHERE q.test.id = :testId")
     List<Question> findQuestionsByTestId(@Param("testId") Long testId);
+
+    @Query("SELECT MAX(q.id) FROM Question q")
+    Long findMaxId();
 }

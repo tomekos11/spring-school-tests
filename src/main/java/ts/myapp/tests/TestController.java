@@ -17,6 +17,7 @@ import ts.myapp.answers.Answer;
 import ts.myapp.answers.repositories.AnswerRepository;
 import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
 import ts.myapp.questions.Question;
+import ts.myapp.questions.QuestionRepository;
 import ts.myapp.services.UserService;
 import ts.myapp.users.User;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -40,6 +41,8 @@ public class TestController {
     private AnswerRepository answerRepository;
     @Autowired
     private AnswerUserAnswerRepository answerUserAnswerRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     public TestController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -112,7 +115,7 @@ public class TestController {
         modelAndView.addObject("user", deserializedUser);
         modelAndView.addObject("test", deserializedTest);
         modelAndView.addObject("answerMaxId", answerRepository.findMaxId());
-
+        modelAndView.addObject("questionMaxId", questionRepository.findMaxId());
 
         return modelAndView;
     }
@@ -134,10 +137,12 @@ public class TestController {
         }
 
         Test jsonRqTest = objectMapper.readValue(rqTest, Test.class);
-//        dodaj odpowiedzi do bazy
 
+//        dodaj / zaktualizuj / usun odpowiedzi
         testService.updateAnswers(jsonRqTest);
 
+//        dodaj / zaktualizuj / usun pytania
+        testService.updateQuestions(jsonRqTest, image);
 
 //        test.setName(jsonRqTest.getName());
 //        test.setAlias(jsonRqTest.getAlias());
@@ -162,9 +167,6 @@ public class TestController {
         User deserializedUser = objectMapper.readValue(serializedUser, User.class);
 
         List<Test> tests = testRepository.findAll();
-
-//        String serializedTest = objectMapper.writeValueAsString(tests);
-//        Test deserializedTest = objectMapper.readValue(serializedTest, Test.class);
 
         ModelAndView modelAndView = new ModelAndView("tests-manage");
 

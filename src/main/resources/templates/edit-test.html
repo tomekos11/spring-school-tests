@@ -33,15 +33,18 @@
         <div class="card-body">
             <div class="accordion" id="questionsAccordion">
                 <!-- JS -->
+            </div>
+            <button class="d-block bg-primary text-bold text-white btn btn-primary mt-2 w-100" type="button" onclick="addNewQuestion()">
+                Dodaj nowe pytanie
+            </button>
         </div>
     </div>
-
-</div>
 
 <script th:inline="javascript">
 
     var testData = [[${test}]];
     let answerMaxId = [[${answerMaxId}]];
+    let questionMaxId = [[${questionMaxId}]];
 
     function initializePage() {
         console.log(testData);
@@ -153,6 +156,22 @@
             createAnswerRow(answers[i], question.id);
         }
     }
+
+    function addNewQuestion() {
+
+        questionMaxId += 1;
+
+        var newQuestion = {
+            id: questionMaxId,
+            content: "Nowe pytanie",
+            pointAmount: 0,
+            answers: []
+        };
+
+        testData.questions.push(newQuestion);
+        addQuestion(newQuestion, testData.questions.length - 1);
+    }
+
 
     function removeRow(row) {
         var tbody = row.parentNode;
