@@ -6,9 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import ts.myapp.answers.repositories.AnswerRepository;
 import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
 import ts.myapp.answers.repositories.UserAnswerRepository;
+import ts.myapp.groups.Group;
+import ts.myapp.groups.GroupTest;
+import ts.myapp.groups.GroupTestRepository;
 import ts.myapp.services.UserService;
 import ts.myapp.users.User;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,12 +26,32 @@ public class UserAnswerController {
     private AnswerRepository answerRepository;
     @Autowired
     private AnswerUserAnswerRepository answerUserAnswerRepository;
+    @Autowired
+    private GroupTestRepository groupTestRepository;
 
-    @PatchMapping("/answer/{id}")
-    public String answer(@PathVariable Long id, @RequestBody List<Long> request) throws JsonProcessingException {
+    @PatchMapping("/group/{groupId}/test/{testId}/answer/{answerId}")
+    public String answer(@PathVariable Long groupId, @PathVariable Long testId, @PathVariable Long answerId, @RequestBody List<Long> request) throws JsonProcessingException {
         User user = userService.me();
 
-        UserAnswer userAnswer = userAnswerRepository.findById(id).orElse(null);
+        List<Group> groups = user.getGroups().stream().map(el -> el.getGroup()).toList();
+        boolean groupExists = groups.stream().anyMatch(group -> group.getId() == groupId);
+        if(!groupExists) return "Użytkownik nie należy do tej grupy";
+
+        GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
+
+        if (groupTest == null) {
+            return "Nie znaleziono tego testu dla tej grupy";
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if(!groupTest.getBeginDate().isBefore(now)) {
+            return "Za wcześnie";
+        } else if (!groupTest.getEndDate().isAfter(now)){
+            return "Za późno";
+        }
+
+        UserAnswer userAnswer = userAnswerRepository.findById(answerId).orElse(null);
 
         if (userAnswer == null) {
             return "Nie znaleziono odpowiedzi";

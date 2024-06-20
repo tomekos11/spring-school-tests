@@ -8,16 +8,18 @@
 
         <div class="container mt-5">
             <div class="card">
-                <div th:text="${groupTest}"></div>
                 <div class="card-header">
                     <h2 th:text="${groupTest.getTest().getName()}">Test Name</h2>
-                    <p th:text="${#temporals.format(groupTest.getBeginDate(), 'dd MMMM yyyy') + ' ' + #temporals.format(groupTest.getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(groupTest.getEndDate(), 'HH:mm')}">Start Date</p>
+                    <p th:text="${#temporals.format(groupTest.getBeginDate(), 'dd MMMM yyyy')}"></p>
+                    <p th:text="${#temporals.format(groupTest.getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(groupTest.getEndDate(), 'HH:mm')}">Start Date</p>
                 </div>
                 <div class="card-body">
-                    <div th:text="${alreadyAnsweredQuestions.size()}"></div>
-                    <div th:text="${groupTest.getTest().getQuestions().size()}"></div>
-                    <div class="card" th:if="${alreadyAnsweredQuestions.size() == groupTest.getTest().getQuestions().size()}">
-                        <div class="card-header">Twoje odpowiedzi</div>
+                    <h2 class="bg-warning text-white text-bold p-2" th:if="${error}" th:text="${error}"> Error</h2>
+                    <div class="card" th:if="${ groupTest.getEndDate().isBefore(#temporals.createNow()) }">
+                        <div class="card-header">
+                            <h4 th:text="${'Wynik: ' + correctAnswerAmount + '/' + groupTest.getTest().getQuestions().size() + '  (' + correctAnswerPercentage + '%) = ' + mark}">Wynik</h4>
+                            <h5 th:if="${alreadyAnsweredQuestions.size() > 0}"> Twoje odpowiedzi </h5>
+                        </div>
                         <div class="card-body">
                             <div th:each="answer : ${alreadyAnsweredQuestions}">
                                 <div th:text="${answer.getQuestion().getContent()}"></div>
@@ -27,9 +29,18 @@
                                     <label class="form-check-label" for="check" th:text="${possibility.getAnswer()}"></label>
                                 </div>
                             </div>
+                            <div th:if="${alreadyAnsweredQuestions.size() == 0}">
+                                <h3>Nie udzieliłeś żadnej odpowiedzi!</h3>
+                            </div>
                         </div>
                     </div>
-                    <div th:if="${lastQuestion == null && alreadyAnsweredQuestions.size() != groupTest.getTest().getQuestions().size()}">
+
+                    <h4 th:if="${alreadyAnsweredQuestions.size() == groupTest.getTest().getQuestions().size() && !groupTest.getEndDate().isBefore(#temporals.createNow())}" class="bg-secondary text-white text-bold p-2" >
+                        Udzieliłeś wszystkich odpowiedzi, jednak test jeszcze trwa. Zaczekaj na jego koniec.
+                    </h4>
+
+
+                    <div th:if="${error == null && lastQuestion == null && alreadyAnsweredQuestions.size() != groupTest.getTest().getQuestions().size()}">
                         <p>
                             <span>
                                 Czy chcesz rozpocząć test&nbsp;
@@ -38,7 +49,7 @@
                         </p>
                         <button type="button" class="btn btn-primary" th:onclick="'startTest(\'/group/' + ${groupId} + '/test/' + ${testId} + '\')'">Start Test</button>
                     </div>
-                    <form th:if="${lastQuestion != null}" id="answerForm" th:action="${'/answer/' + lastQuestion.getId()}" method="patch">
+                    <form th:if="${error == null && lastQuestion != null}" id="answerForm" th:action="${'/group/' + groupId + '/test/' + testId + '/answer/' + lastQuestion.getId()}" method="patch">
                         <h4>Questions</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
@@ -137,5 +148,6 @@
                 color: white;
             }
         </style>
+        <script th:replace="js/logout :: script"></script>
     </body>
 </html>

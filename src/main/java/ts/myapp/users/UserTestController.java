@@ -23,6 +23,7 @@ import ts.myapp.tests.Test;
 import ts.myapp.tests.TestRepository;
 import ts.myapp.users.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +40,8 @@ public class UserTestController {
     private UserTestRepository userTestRepository;
     @Autowired
     private GroupTestRepository groupTestRepository;
+    @Autowired
+    private UserTestService userTestService;
 
     public UserTestController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper
@@ -52,8 +55,6 @@ public class UserTestController {
 
         List<Group> groups = user.getGroups().stream().map(el -> el.getGroup()).toList();
 
-        System.out.println(objectMapper.writeValueAsString(groups));
-
         boolean groupExists = groups.stream().anyMatch(group -> group.getId() == groupId);
 
         model.addAttribute("user", user);
@@ -63,7 +64,6 @@ public class UserTestController {
             return "no_required_permissions";
         }
 
-//        UserTest userTest = userTestRepository.findTestById(testId);
         GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
 
 
@@ -74,8 +74,17 @@ public class UserTestController {
             return "no_required_permissions";
         }
 
+        LocalDateTime now = LocalDateTime.now();
+
+        if(!groupTest.getBeginDate().isBefore(now)) {
+            System.out.println("blad time 1");
+            model.addAttribute("error", "Jest za wcześnie na rozwiązywanie testu!");
+        } else if (!groupTest.getEndDate().isAfter(now)){
+            System.out.println("blad time 2");
+            model.addAttribute("error", "Jest za późno na rozwiązywanie testu!");
+        }
+
         List<Question> testQuestions = groupTest.getTest().getQuestions();
-//        List<Question> testQuestions = userTest.getTest().getQuestions();
 
         UserAnswer lastQuestion = user.getAnswers().stream()
                 .filter(answer -> answer.getIsCorrect() == null)
@@ -87,10 +96,6 @@ public class UserTestController {
                         .toList();
 
         System.out.println(objectMapper.writeValueAsString(lastQuestion));
-//        userAnswersWithoutAnswerGiven.stream().filter()
-
-//        String serializedUserTest = objectMapper.writeValueAsString(userTest);
-//        UserTest deserializedUserTest = objectMapper.readValue(serializedUserTest, UserTest.class);
 
         String serializedGroupTest = objectMapper.writeValueAsString(groupTest);
         GroupTest deserializedGroupTest = objectMapper.readValue(serializedGroupTest, GroupTest.class);
@@ -101,10 +106,15 @@ public class UserTestController {
         String serializedUser = objectMapper.writeValueAsString(user);
         User deserializedUser = objectMapper.readValue(serializedUser, User.class);
 
+        long correctAnswerAmount = deserializedAlreadyAnsweredQuestions.stream().filter(el -> el.getIsCorrect()).count();
+        double correctAnswerPercentage =  (double) (correctAnswerAmount * 100 / groupTest.getTest().getQuestions().size());
+
         model.addAttribute("user", deserializedUser);
-//        model.addAttribute("userTest", deserializedUserTest);
         model.addAttribute("groupTest", deserializedGroupTest);
         model.addAttribute("alreadyAnsweredQuestions", deserializedAlreadyAnsweredQuestions);
+        model.addAttribute("correctAnswerAmount", correctAnswerAmount);
+        model.addAttribute("correctAnswerPercentage", (int) correctAnswerPercentage);
+        model.addAttribute("mark", userTestService.calculateGrade(correctAnswerPercentage));
 
         if (lastQuestion != null) {
             model.addAttribute("lastQuestion", lastQuestion);
