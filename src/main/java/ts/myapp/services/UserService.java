@@ -41,7 +41,7 @@ public class UserService {
     public boolean addEmptyAnswers(Long groupId, Long testId) {
         User user = this.me();
 
-        UserTest userTest = userTestRepository.findTestByIdAndUserId(testId, user.getId());
+        UserTest userTest = userTestRepository.findByTestIdAndUserId(testId, user.getId());
         GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
 
         System.out.println(userTest.getBeginDate());

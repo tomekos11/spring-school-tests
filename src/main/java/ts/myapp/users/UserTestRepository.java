@@ -11,5 +11,5 @@ public interface UserTestRepository extends JpaRepository<UserTest, Long> {
     @Query("SELECT t FROM UserTest t WHERE t.id = :id")
     UserTest findTestById(@Param("id") Long id);
 
-    UserTest findTestByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+    UserTest findByTestIdAndUserId(@Param("id") Long testId, @Param("userId") Long userId);
 }

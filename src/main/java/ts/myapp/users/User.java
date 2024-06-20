@@ -1,18 +1,22 @@
 package ts.myapp.users;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ts.myapp.answers.UserAnswer;
 import ts.myapp.groups.Group;
+import ts.myapp.tests.Test;
 
 import java.util.List;
 import java.util.SequencedCollection;
+import java.util.stream.Collectors;
 
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user"})
 @Data
 @AllArgsConstructor
@@ -44,6 +48,7 @@ public class User {
 //    hidden-relations
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference("user-userGroup")
     private List<UserGroup> groups;
 
     @JsonIgnore
@@ -57,4 +62,16 @@ public class User {
     public List<Group> getGroupNames () {
         return this.getGroups().stream().map(el -> el.getGroup()).toList();
     }
+
+    @JsonGetter("AllUsersTests")
+    public List<Test> getAllUsersTests() {
+        return this.getTests().stream().map(UserTest::getTest).collect(Collectors.toList());
+    }
+
+    @JsonGetter("AllUsersTestsIds")
+    public List<Long> getAllUsersTestsIds() {
+        return this.getTests().stream().map(UserTest::getTest).toList().stream().map(Test::getId).collect(Collectors.toList());
+    }
+
+
 }

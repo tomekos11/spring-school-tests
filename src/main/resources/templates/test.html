@@ -8,14 +8,15 @@
 
         <div class="container mt-5">
             <div class="card">
+                <div th:text="${groupTest}"></div>
                 <div class="card-header">
-                    <h2 th:text="${userTest.getTest().getName()}">Test Name</h2>
+                    <h2 th:text="${groupTest.getTest().getName()}">Test Name</h2>
                     <p th:text="${#temporals.format(groupTest.getBeginDate(), 'dd MMMM yyyy') + ' ' + #temporals.format(groupTest.getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(groupTest.getEndDate(), 'HH:mm')}">Start Date</p>
                 </div>
                 <div class="card-body">
                     <div th:text="${alreadyAnsweredQuestions.size()}"></div>
-                    <div th:text="${userTest.getTest().getQuestions().size()}"></div>
-                    <div class="card" th:if="${alreadyAnsweredQuestions.size() == userTest.getTest().getQuestions().size()}">
+                    <div th:text="${groupTest.getTest().getQuestions().size()}"></div>
+                    <div class="card" th:if="${alreadyAnsweredQuestions.size() == groupTest.getTest().getQuestions().size()}">
                         <div class="card-header">Twoje odpowiedzi</div>
                         <div class="card-body">
                             <div th:each="answer : ${alreadyAnsweredQuestions}">
@@ -28,12 +29,12 @@
                             </div>
                         </div>
                     </div>
-                    <div th:if="${lastQuestion == null && alreadyAnsweredQuestions.size() != userTest.getTest().getQuestions().size()}">
+                    <div th:if="${lastQuestion == null && alreadyAnsweredQuestions.size() != groupTest.getTest().getQuestions().size()}">
                         <p>
                             <span>
                                 Czy chcesz rozpocząć test&nbsp;
                             </span>
-                            <span th:text="${userTest.getTest().getName()}"></span>
+                            <span th:text="${groupTest.getTest().getName()}"></span>
                         </p>
                         <button type="button" class="btn btn-primary" th:onclick="'startTest(\'/group/' + ${groupId} + '/test/' + ${testId} + '\')'">Start Test</button>
                     </div>

@@ -11,7 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 import ts.myapp.services.UserService;
 import ts.myapp.tests.Test;
 import ts.myapp.users.User;
+import ts.myapp.users.UserGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -36,15 +38,24 @@ public class GroupController {
         String serializedUser = objectMapper.writeValueAsString(currentUser);
         User deserializedUser = objectMapper.readValue(serializedUser, User.class);
 
-        List<Group> groups = groupRepository.findAll().stream().toList();
+        List<Group> groups = groupRepository.findAll();
 
         String serializedGroups = objectMapper.writeValueAsString(groups);
         List<Group> deserializedGroups = objectMapper.readValue(serializedGroups, new TypeReference<List<Group>>() {});
 
         ModelAndView modelAndView = new ModelAndView("groups-manage");
 
-        modelAndView.addObject("user", deserializedUser);
-        modelAndView.addObject("groups", deserializedGroups);
+//        modelAndView.addObject("user", deserializedUser);
+//        modelAndView.addObject("groups", deserializedGroups);
+
+        List<GroupDTO> groupDTOs = groups.stream()
+                .map(GroupDTO::from) // użyj metody from z GroupDTO
+                    .toList();
+
+        System.out.println(groupDTOs);
+
+        modelAndView.addObject("user", currentUser);
+        modelAndView.addObject("groups", groupDTOs);
 
         return modelAndView;
     }

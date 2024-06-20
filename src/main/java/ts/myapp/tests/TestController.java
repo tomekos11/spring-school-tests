@@ -16,11 +16,15 @@ import org.springframework.web.servlet.view.RedirectView;
 import ts.myapp.answers.Answer;
 import ts.myapp.answers.repositories.AnswerRepository;
 import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
+import ts.myapp.groups.Group;
+import ts.myapp.groups.GroupRepository;
 import ts.myapp.questions.Question;
 import ts.myapp.questions.QuestionRepository;
 import ts.myapp.services.UserService;
 import ts.myapp.users.User;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ts.myapp.users.UserTest;
+import ts.myapp.users.UserTestRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +47,10 @@ public class TestController {
     private AnswerUserAnswerRepository answerUserAnswerRepository;
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private UserTestRepository userTestRepository;
 
     public TestController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;

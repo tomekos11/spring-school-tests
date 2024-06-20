@@ -6,48 +6,116 @@
 <body>
 <div th:replace="fragments/navbar :: nav(user=${user})"></div>
 
-    <div class="container mt-5">
-        <h1 class="mb-4">Group List</h1>
-        <div class="accordion" id="groupsAccordion">
-            <div th:each="group, groupStat : ${groups}" class="accordion-item">
-                <h2 class="accordion-header" th:id="'headingGroup' + ${groupStat.index}">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                            th:attr="data-bs-target='#collapseGroup' + ${groupStat.index}, aria-controls='collapseGroup' + ${groupStat.index}">
-                        <span th:text="${group.getName()}">Group Name</span>
-                    </button>
-                </h2>
-                <div th:id="'collapseGroup' + ${groupStat.index}" class="accordion-collapse collapse show"
-                     th:attr="aria-labelledby='headingGroup' + ${groupStat.index}, data-bs-parent='#groupsAccordion'">
-                    <div class="accordion-body">
-                        <p>Type: <span th:text="${group.getType()}">Group Type</span></p>
-                        <p>Year: <span th:text="${group.getYear()}">Group Year</span></p>
-                        <p>Season: <span th:text="${group.getSeason()}">Group Season</span></p>
-                        <div class="accordion" th:id="'usersAccordion' + ${groupStat.index}">
-                            <div th:text="${group.getUsers()}"></div>
-                            <div th:each="groupUser, userStat : ${group.getUsers()}" class="accordion-item">
-                                <h2 class="accordion-header" th:id="'headingUser' + ${groupStat.index} + '-' + ${userStat.index}">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+<div class="container mt-5">
+    <h1 class="mb-4">Group List</h1>
+    <div class="accordion" id="groupsAccordion">
+        <div th:each="group, groupStat : ${groups}" class="accordion-item">
+            <h2 class="accordion-header" th:id="'headingGroup' + ${groupStat.index}">
+                <button class="accordion-button"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        th:attr="data-bs-target='#collapseGroup' + ${groupStat.index}, aria-controls='collapseGroup' + ${groupStat.index}">
+                    <span th:text="${group.name}">Group Name</span>
+                </button>
+            </h2>
+            <div th:id="'collapseGroup' + ${groupStat.index}"
+                 class="accordion-collapse collapse show"
+                 th:attr="aria-labelledby='headingGroup' + ${groupStat.index}, data-bs-parent='#groupsAccordion'">
+                <div class="accordion-body">
+                    <p>Type: <span th:text="${group.type}">Group Type</span></p>
+                    <p>Year: <span th:text="${group.year}">Group Year</span></p>
+                    <p>Season: <span th:text="${group.season}">Group Season</span></p>
+                    <div class="d-flex">
+                        <div class="accordion w-50 me-1" th:id="'usersAccordion' + ${groupStat.index}">
+                            <h2>User List</h2>
+                            <div th:each="groupUser, userStat : ${group.users}" class="accordion-item">
+                                <h2 class="accordion-header"
+                                    th:id="'headingUser' + ${groupStat.index} + '-' + ${userStat.index}">
+                                    <button class="accordion-button collapsed"
+                                            type="button"
+                                            data-bs-toggle="collapse"
                                             th:attr="data-bs-target='#collapseUser' + ${groupStat.index} + '-' + ${userStat.index}, aria-controls='collapseUser' + ${groupStat.index} + '-' + ${userStat.index}">
-                                        <span th:text="${groupUser.getUser().getIndeks()}">User Name</span>
+                                        <div class="d-flex justify-content-between align-items-center me-2 w-100">
+                                            <span class="bg-success text-white p-1 rounded"
+                                                  th:text="${groupUser.getIndeks()}">User Indeks</span>
+                                            <span th:text="${groupUser.getName()}">User name</span>
+                                        </div>
                                     </button>
                                 </h2>
-                                <div th:id="'collapseUser' + ${groupStat.index} + '-' + ${userStat.index}" class="accordion-collapse collapse"
+                                <div th:id="'collapseUser' + ${groupStat.index} + '-' + ${userStat.index}"
+                                     class="accordion-collapse collapse"
                                      th:attr="aria-labelledby='headingUser' + ${groupStat.index} + '-' + ${userStat.index}, data-bs-parent='#usersAccordion' + ${groupStat.index}">
                                     <div class="accordion-body">
                                         <ul>
-                                            <li th:each="test : ${groupUser.getUser().getTests()}" th:text="${test}">Test Name</li>
+                                            <li th:each="test : ${groupUser.getTests()}" th:text="${test}">Test Name</li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="w-50 ms-1">
+                            <h2>Group Tests List</h2>
+                            <div th:each="test, testStat : ${group.getGroupTests}" class="accordion-item">
+                                <h4 th:text="${test.getTest().getName()}"> Test name</h4>
+                                <h5 style="color:gray; font-size:12px" th:text="${#temporals.format(test.getBeginDate(), 'dd MMMM yyyy')}"> Begin date</h5>
+                                <a class="btn btn-primary" th:href="${'/tests/' + test.getTest().getId()}"> Przejdź do testu</a>
+                                <button
+                                        class="btn btn-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmationModal"
+                                        th:onclick="'updateData(\'' + ${group.getId()} + '\', \'' + ${test.getTest().getId()} + '\')'"
+                                > Dodaj test każdemu użytkownikowi</button>
+                            </div>
+                            <button class="btn btn-secondary">Zaplanuj test</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Czy jesteś pewny, że chcesz dodać ten test?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addTestToAllUsersInGroup()">Potwierdź</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script th:inline="javascript">
+
+    const data = {
+        groupId: -1,
+        testId: -1,
+    }
+
+    const updateData = (gId, tId) => {
+        data.groupId = gId;
+        data.testId = tId;
+
+        console.log(data);
+    }
+
+    const addTestToAllUsersInGroup = () => {
+        axios.get(`/api/addTest/${data.groupId}/${data.testId}`)
+            .then(res => {
+                window.location.reload();
+            })
+            .catch(err => console.error(err));
+    }
+
 
 </script>
 

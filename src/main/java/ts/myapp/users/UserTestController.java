@@ -55,22 +55,27 @@ public class UserTestController {
         System.out.println(objectMapper.writeValueAsString(groups));
 
         boolean groupExists = groups.stream().anyMatch(group -> group.getId() == groupId);
-        System.out.println(groupExists);
+
+        model.addAttribute("user", user);
+
         if (!groupExists) {
+            System.out.println("BLAD1");
             return "no_required_permissions";
         }
 
-        UserTest userTest = userTestRepository.findTestById(testId);
+//        UserTest userTest = userTestRepository.findTestById(testId);
         GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
 
 
 
-        if (userTest == null || groupTest == null) {
-            System.out.println("TU");
+//        if (userTest == null || groupTest == null) {
+        if (groupTest == null) {
+            System.out.println("BLAD2");
             return "no_required_permissions";
         }
 
-        List<Question> testQuestions = userTest.getTest().getQuestions();
+        List<Question> testQuestions = groupTest.getTest().getQuestions();
+//        List<Question> testQuestions = userTest.getTest().getQuestions();
 
         UserAnswer lastQuestion = user.getAnswers().stream()
                 .filter(answer -> answer.getIsCorrect() == null)
@@ -84,8 +89,8 @@ public class UserTestController {
         System.out.println(objectMapper.writeValueAsString(lastQuestion));
 //        userAnswersWithoutAnswerGiven.stream().filter()
 
-        String serializedUserTest = objectMapper.writeValueAsString(userTest);
-        UserTest deserializedUserTest = objectMapper.readValue(serializedUserTest, UserTest.class);
+//        String serializedUserTest = objectMapper.writeValueAsString(userTest);
+//        UserTest deserializedUserTest = objectMapper.readValue(serializedUserTest, UserTest.class);
 
         String serializedGroupTest = objectMapper.writeValueAsString(groupTest);
         GroupTest deserializedGroupTest = objectMapper.readValue(serializedGroupTest, GroupTest.class);
@@ -97,7 +102,7 @@ public class UserTestController {
         User deserializedUser = objectMapper.readValue(serializedUser, User.class);
 
         model.addAttribute("user", deserializedUser);
-        model.addAttribute("userTest", deserializedUserTest);
+//        model.addAttribute("userTest", deserializedUserTest);
         model.addAttribute("groupTest", deserializedGroupTest);
         model.addAttribute("alreadyAnsweredQuestions", deserializedAlreadyAnsweredQuestions);
 

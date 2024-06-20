@@ -1,78 +1,74 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="fragments/head :: head"></head>
+<head th:replace="fragments/head :: head"></head>
 <body>
-    <div th:replace="fragments/navbar :: nav(user=${user})"></div>
+<div th:replace="fragments/navbar :: nav(user=${user})"></div>
 
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Segment "Twoje wyniki" -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Twoje wyniki</h5>
-                        <p class="card-text">Tutaj możesz umieścić informacje o twoich wynikach.</p>
-                        <div th:each="test : ${user.getTests()}">
-                            <div th:if="${test.getBeginDate() != null && test.getBeginDate().isBefore(#temporals.createNow())}" class="d-flex flex-column justify-content-around border border-black-50 rounded p-2">
-                                <p class="card-text" th:text="${test.getTest().getName()}"></p>
-                                <p class="card-text" th:text="${#temporals.format(test.getBeginDate(), 'dd MMMM yyyy')}"></p>
-                                <p class="card-text" th:text="${'Ilosc punktow: ' + test.getPointAmount() +' / '+ test.getTest().getQuestions().size()}"></p>
-                            </div>
+<div class="container mt-4">
+    <div class="row">
+        <!-- Segment "Twoje wyniki" -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Twoje wyniki</h5>
+                    <p class="card-text">Tutaj możesz umieścić informacje o twoich wynikach.</p>
+                    <div th:each="test : ${user.getTests()}">
+                        <div th:if="${test.getBeginDate() != null && test.getBeginDate().isBefore(#temporals.createNow())}" class="d-flex flex-column justify-content-around border border-black-50 rounded p-2">
+                            <p class="card-text" th:text="${test.getTest().getName()}"></p>
+                            <p class="card-text" th:text="${#temporals.format(test.getBeginDate(), 'dd MMMM yyyy')}"></p>
+                            <p class="card-text" th:text="${'Ilosc punktow: ' + test.getPointAmount() +' / '+ test.getTest().getQuestions().size()}"></p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Segment "Twoje dane" -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Twoje dane</h5>
-                        <p class="card-text" th:text="'Imie = ' + ${user.name}"></p>
-                        <p class="card-text" th:text="'Nazwisko = ' + ${user.surname}"></p>
-                        <p class="card-text text-success text-bold" th:text="'Indeks = ' + ${user.indeks}"></p>
-                        <div th:each="group : ${user.getGroups()}">
-                            <p class="card-text" th:text="${group.getGroup().getName()}"></p>
-                            <p class="card-text" th:text="${group.getGroup().getType()}"></p>
-                            <p class="card-text" th:text="${group.getGroup().getSeason()}"></p>
-                        </div>
+        <!-- Segment "Twoje dane" -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Twoje dane</h5>
+                    <p class="card-text" th:text="'Imie = ' + ${user.name}"></p>
+                    <p class="card-text" th:text="'Nazwisko = ' + ${user.surname}"></p>
+                    <p class="card-text text-success text-bold" th:text="'Indeks = ' + ${user.indeks}"></p>
+                    <div th:each="group : ${user.getGroups()}">
+                        <p class="card-text" th:text="${group.getGroup().getName()}"></p>
+                        <p class="card-text" th:text="${group.getGroup().getType()}"></p>
+                        <p class="card-text" th:text="${group.getGroup().getSeason()}"></p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Segment "Nadchodzące terminy testów" -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Nadchodzące terminy testów</h5>
-                        <div th:each="group : ${user.getGroups()}">
-                            <div th:if="${group != null and group.getGroup() != null and group.getGroup().getTests != null}">
-                                <div th:each="loopTest : ${group.getGroup().getTests()}" class="d-flex justify-content-around border border-black-50 rounded p-2">
-                                    <div>
-                                        <div th:text="${loopTest.getTest().getName()}" class="text-bold fw-bold"></div>
-                                        <div class="text-bold fw-bold fs-7">
-                                            <span th:text="${group.getGroup().getName()}"></span>
-                                            <span th:text="${group.getGroup().getType()}" class="text-success"></span>
-                                        </div>
-                                        <div th:text="${loopTest.getBeginDate() + ' - ' + loopTest.getEndDate()}"></div>
+        <!-- Segment "Nadchodzące terminy testów" -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Nadchodzące terminy testów</h5>
+                    <div th:each="group : ${user.getGroups()}">
+                        <div th:if="${group != null and group.getGroup().getTests() != null}">
+                            <div th:each="loopTest : ${group.getGroup().getTests()}" class="d-flex justify-content-around border border-black-50 rounded p-2">
+                                <div>
+                                    <div th:text="${loopTest.getTest().getName()}" class="text-bold fw-bold"></div>
+                                    <div class="text-bold fw-bold fs-7">
+                                        <span th:text="${group.getGroup().getName()}"></span>
+                                        <span th:text="${group.getGroup().getType()}" class="text-success"></span>
                                     </div>
-                                    <div>
-                                        <a th:href="${'/group/' + group.getGroup().getId() + '/test/' + loopTest.getId()}">
-                                            Zacznij
-                                        </a>
-                                    </div>
+                                    <div th:text="${loopTest.getBeginDate() + ' - ' + loopTest.getEndDate()}"></div>
+                                </div>
+                                <div>
+                                    <a th:href="${'/group/' + group.getGroup().getId() + '/test/' + loopTest.getTest().getId()}">
+                                        Zacznij
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-    <script th:replace="js/logout :: script"></script>
+</div>
+<script th:replace="js/logout :: script"></script>
 </body>
-
-
-
 </html>
