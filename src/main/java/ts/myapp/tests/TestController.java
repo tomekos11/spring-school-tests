@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -150,7 +153,7 @@ public class TestController {
         testService.updateAnswers(jsonRqTest);
 
 //        dodaj / zaktualizuj / usun pytania
-        testService.updateQuestions(jsonRqTest, image);
+        testService.updateQuestions(test, jsonRqTest, image);
 
         String serializedTest = objectMapper.writeValueAsString(test);
         Test deserializedTest = objectMapper.readValue(serializedTest, Test.class);
@@ -179,5 +182,4 @@ public class TestController {
 
         return modelAndView;
     }
-
 }

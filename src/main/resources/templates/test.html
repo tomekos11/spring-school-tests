@@ -14,19 +14,30 @@
                     <p th:text="${#temporals.format(groupTest.getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(groupTest.getEndDate(), 'HH:mm')}">Start Date</p>
                 </div>
                 <div class="card-body">
-                    <h2 class="bg-warning text-white text-bold p-2" th:if="${error}" th:text="${error}"> Error</h2>
+                    <h2 class="bg-warning text-white fw-bold p-2" th:if="${error}" th:text="${error}"> Error</h2>
                     <div class="card" th:if="${ groupTest.getEndDate().isBefore(#temporals.createNow()) }">
                         <div class="card-header">
                             <h4 th:text="${'Wynik: ' + correctAnswerAmount + '/' + groupTest.getTest().getQuestions().size() + '  (' + correctAnswerPercentage + '%) = ' + mark}">Wynik</h4>
                             <h5 th:if="${alreadyAnsweredQuestions.size() > 0}"> Twoje odpowiedzi </h5>
                         </div>
                         <div class="card-body">
-                            <div th:each="answer : ${alreadyAnsweredQuestions}">
-                                <div th:text="${answer.getQuestion().getContent()}"></div>
-                                <div th:each="possibility : ${answer.getQuestion().getAnswers()}">
-                                    <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${possibility.getIsCorrect()}"
-                                           th:class="${possibility.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect'}">
-                                    <label class="form-check-label" for="check" th:text="${possibility.getAnswer()}"></label>
+<!--                            <div th:each="answer : ${alreadyAnsweredQuestions}">-->
+<!--                                <div th:text="${answer}"></div>-->
+<!--                                <div th:text="${answer.getQuestion().getContent()}"></div>-->
+<!--                                <div th:each="answeredQuestion : ${answer.getQuestion().getAnswers()}">-->
+<!--                                    <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${answeredQuestion.getIsCorrect()}"-->
+<!--                                           th:class="${answeredQuestion.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect'}">-->
+<!--                                    <label class="form-check-label" for="check" th:text="${answeredQuestion.getAnswer()}"></label>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div th:each="question : ${groupTest.getTest().getQuestions()}">
+                                <div th:text="${question}"></div>
+                                <div th:text="${question.getContent()}"></div>
+                                <div th:text="${question.getUserAnswers()}"></div>
+                                <div th:each="answeredQuestion : ${question.getAnswers()}">
+                                    <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${answeredQuestion.getIsCorrect()}"
+                                           th:class="${answeredQuestion.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect'}">
+                                    <label class="form-check-label" for="check" th:text="${answeredQuestion.getAnswer()}"></label>
                                 </div>
                             </div>
                             <div th:if="${alreadyAnsweredQuestions.size() == 0}">
@@ -35,7 +46,7 @@
                         </div>
                     </div>
 
-                    <h4 th:if="${alreadyAnsweredQuestions.size() == groupTest.getTest().getQuestions().size() && !groupTest.getEndDate().isBefore(#temporals.createNow())}" class="bg-secondary text-white text-bold p-2" >
+                    <h4 th:if="${alreadyAnsweredQuestions.size() == groupTest.getTest().getQuestions().size() && !groupTest.getEndDate().isBefore(#temporals.createNow())}" class="bg-secondary text-white fw-bold p-2" >
                         Udzieliłeś wszystkich odpowiedzi, jednak test jeszcze trwa. Zaczekaj na jego koniec.
                     </h4>
 

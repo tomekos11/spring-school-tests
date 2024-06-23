@@ -22,10 +22,12 @@ public class UserTest {
     private long id;
 
     @ManyToOne
+    @JoinColumn(name = "test_id")
     private Test test;
 
     @JsonIgnore
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name="begin_date")

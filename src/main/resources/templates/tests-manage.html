@@ -9,33 +9,87 @@
         <div class="container mt-t">
             <h1>Zarządzanie testami</h1>
 
+            <div id="messageDiv" class="fw-bold" style="display: none;"></div>
 
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nazwa</th>
-                    <th>Alias</th>
-                    <th>Akcje</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="test : ${tests}">
-                    <td th:text="${test.getId()}"></td>
-                    <td th:text="${test.getName()}"></td>
-                    <td th:text="${test.getAlias()}"></td>
-                    <td>
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <a th:href="${'/tests/'+test.getId()}" type="button" class="btn btn-primary">Edytuj</a>
-                            <button type="button" class="btn btn-danger">Usuń</button>
-                            <button type="button" class="btn btn-secondary">Inna akcja</button>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div style="overflow: auto">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nazwa</th>
+                        <th>Alias</th>
+                        <th>Akcje</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="test : ${tests}" th:id="${'test' + test.getId()}">
+                        <td th:text="${test.getId()}"></td>
+                        <td th:text="${test.getName()}"></td>
+                        <td th:text="${test.getAlias()}"></td>
+                        <td>
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <a th:href="${'/tests/'+test.getId()}" type="button" class="d-flex align-items-center btn btn-primary">Edytuj</a>
+                                <button th:onclick="|deleteTest(${test.getId()})|" type="button" class="btn btn-danger">Usuń</button>
+                                <button type="button" class="btn btn-secondary">Inna akcja</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
             <a class="btn btn-success" href="/tests/create" >Dodaj nowy test</a>
         </div>
         <script th:replace="js/logout :: script"></script>
+        <script>
+
+            const deleteTest = (testId)  => {
+                axios.delete(`/api/tests/${testId}`)
+                    .then(res => {
+
+                        localStorage.setItem('message', JSON.stringify(res.data.data));
+                        loadMessage();
+
+                        if(res.data.success) {
+                            const testRecord = document.getElementById(`test${testId}`);
+                            if(testRecord) {
+                                testRecord.remove();
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There was an error deleting the test:', error);
+                    });
+                }
+
+            const loadMessage = () => {
+                var message = localStorage.getItem('message');
+                const messageDiv = document.getElementById('messageDiv');
+
+                if (localStorage.getItem('message')) {
+                    messageDiv.style.display = 'block';
+                    const jsonMessage = JSON.parse(message)
+                    console.log(jsonMessage);
+                    if (jsonMessage.type === 'success') {
+                        messageDiv.classList.remove("text-danger")
+                        messageDiv.classList.add("text-success")
+                    } else if(jsonMessage.type === 'warning') {
+                        messageDiv.classList.remove("text-success")
+                        messageDiv.classList.add("text-danger")
+                    }
+
+                    messageDiv.innerHTML = jsonMessage.message;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', loadMessage);
+
+            window.addEventListener('beforeunload', function() {
+                localStorage.removeItem('message');
+                console.log('Klucz "message" został usunięty z localStorage');
+            });
+
+        </script>
+
+
     </body>
 </html>

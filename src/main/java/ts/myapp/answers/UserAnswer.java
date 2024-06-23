@@ -40,6 +40,7 @@ public class UserAnswer {
     private Boolean isCorrect;
 
     //    hidden-relations
+    @JsonIgnore
     @OneToMany(mappedBy = "userAnswer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AnswerUserAnswer> userResponse;
 

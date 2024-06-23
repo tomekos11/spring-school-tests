@@ -8,13 +8,24 @@
 
 <div class="container mt-5">
 
+    <a class="btn btn-secondary mb-1" href="/tests/manage">
+        Wróć do listy testów
+    </a>
+
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between">
                 <h2 th:text="${'Edycja testu Nr' + test.getId()}"></h2>
-                <button class="btn btn-success mt-2" type="button" onclick="changeTestDetails()">
-                    Zapisz zmiany
-                </button>
+
+                <div class="buttons">
+                    <button class="btn btn-danger mt-2" type="button" th:onclick="|deleteTest(${test.getId()})|">
+                        Usuń
+                    </button>
+                    <button class="btn btn-success mt-2" type="button" onclick="changeTestDetails()">
+                        Zapisz zmiany
+                    </button>
+                </div>
+
             </div>
         </div>
         <div class="card-body">
@@ -34,7 +45,7 @@
             <div class="accordion" id="questionsAccordion">
                 <!-- JS -->
             </div>
-            <button class="d-block bg-primary text-bold text-white btn btn-primary mt-2 w-100" type="button" onclick="addNewQuestion()">
+            <button class="d-block bg-primary text-white btn btn-primary mt-2 w-100" type="button" onclick="addNewQuestion()">
                 Dodaj nowe pytanie
             </button>
         </div>
@@ -263,8 +274,6 @@
             isNew: true,
         })
 
-
-        console.log(testData);
         var tbody = document.getElementById('answersTable' + questionIndex);
         var noAnswersRow = document.getElementById('noAnswersRow' + questionIndex);
 
@@ -371,6 +380,17 @@
             testData.questions.splice(qId, 1);
             changeTestDetails();
         }
+    }
+
+    const deleteTest = (testId)  => {
+        axios.delete(`/api/tests/${testId}`)
+            .then(res => {
+                localStorage.setItem('message', JSON.stringify(res.data.data));
+                window.location = '/tests/manage';
+            })
+            .catch(error => {
+                console.error('There was an error deleting the test:', error);
+            });
     }
 
     document.addEventListener('DOMContentLoaded', initializePage);

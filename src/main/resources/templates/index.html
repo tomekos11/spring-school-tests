@@ -30,7 +30,7 @@
                     <h5 class="card-title">Twoje dane</h5>
                     <p class="card-text" th:text="'Imie = ' + ${user.name}"></p>
                     <p class="card-text" th:text="'Nazwisko = ' + ${user.surname}"></p>
-                    <p class="card-text text-success text-bold" th:text="'Indeks = ' + ${user.indeks}"></p>
+                    <p class="card-text text-success fw-bold" th:text="'Indeks = ' + ${user.indeks}"></p>
                     <div th:each="group : ${user.getGroups()}">
                         <p class="card-text" th:text="${group.getGroup().getName()}"></p>
                         <p class="card-text" th:text="${group.getGroup().getType()}"></p>
@@ -49,8 +49,8 @@
                         <div th:if="${group != null and group.getGroup().getTests() != null}">
                             <div th:each="loopTest : ${group.getGroup().getTests()}" class="d-flex justify-content-around border border-black-50 rounded p-2">
                                 <div>
-                                    <div th:text="${loopTest.getTest().getName()}" class="text-bold fw-bold"></div>
-                                    <div class="text-bold fw-bold fs-7">
+                                    <div th:text="${loopTest.getTest().getName()}" class="fw-bold"></div>
+                                    <div class="fw-bold fs-7">
                                         <span th:text="${group.getGroup().getName()}"></span>
                                         <span th:text="${group.getGroup().getType()}" class="text-success"></span>
                                     </div>

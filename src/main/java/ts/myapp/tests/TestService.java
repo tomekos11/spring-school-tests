@@ -105,9 +105,9 @@ public class TestService {
         return true;
     }
 
-    public Boolean updateQuestions(Test newTest, MultipartFile image) {
+    public Boolean updateQuestions(Test test, Test newTest, MultipartFile image) {
 
-        List<Question> testQuestions = questionRepository.findQuestionsByTestId(newTest.getId());
+        List<Question> testQuestions = test.getQuestions();
         List<Long> testQuestionIds = testQuestions.stream().map(el -> el.getId()).toList();
 
         List<Long> newTestQuestionIds = new ArrayList<>();
@@ -126,7 +126,7 @@ public class TestService {
                     } else {
                         Question newQuestion = new Question();
 
-                        newQuestion.setTest(testQuestions.getLast().getTest());
+                        newQuestion.setTest(test);
                         newQuestion.setAnswers(new ArrayList<>());
                         newQuestion.setContent(question.getContent());
                         newQuestion.setImage("TODO");
