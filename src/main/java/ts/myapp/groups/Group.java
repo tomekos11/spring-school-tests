@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import ts.myapp.tests.Test;
 import ts.myapp.users.User;
 import ts.myapp.users.UserGroup;
 
@@ -45,5 +46,10 @@ public class Group {
     @JsonGetter("allUsersFromThisGroup")
     public List<User> getAllUsersFromThisGroup() {
         return this.getUsers().stream().map(UserGroup::getUser).collect(Collectors.toList());
+    }
+
+    @JsonGetter("allTestsFromThisGroup")
+    public List<Test> getAllTestsFromThisGroup() {
+        return this.getTests().stream().map(GroupTest::getTest).collect(Collectors.toList());
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ts.myapp.services.UserService;
 import ts.myapp.tests.Test;
+import ts.myapp.tests.TestRepository;
 import ts.myapp.users.User;
 import ts.myapp.users.UserGroup;
 
@@ -25,6 +26,8 @@ public class GroupController {
     private final ObjectMapper objectMapper;
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private TestRepository testRepository;
 
     public GroupController(UserService userService, ObjectMapper objectMapper) {
         this.userService = userService;
@@ -45,17 +48,16 @@ public class GroupController {
 
         ModelAndView modelAndView = new ModelAndView("groups-manage");
 
-//        modelAndView.addObject("user", deserializedUser);
-//        modelAndView.addObject("groups", deserializedGroups);
 
         List<GroupDTO> groupDTOs = groups.stream()
-                .map(GroupDTO::from) // użyj metody from z GroupDTO
+                .map(GroupDTO::from)
                     .toList();
 
-        System.out.println(groupDTOs);
+        List<Test> tests = testRepository.findAll();
 
         modelAndView.addObject("user", currentUser);
         modelAndView.addObject("groups", groupDTOs);
+        modelAndView.addObject("tests", tests);
 
         return modelAndView;
     }

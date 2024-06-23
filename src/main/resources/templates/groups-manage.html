@@ -25,9 +25,9 @@
                     <p>Type: <span th:text="${group.type}">Group Type</span></p>
                     <p>Year: <span th:text="${group.year}">Group Year</span></p>
                     <p>Season: <span th:text="${group.season}">Group Season</span></p>
-                    <div class="d-flex">
-                        <div class="accordion w-50 me-1" th:id="'usersAccordion' + ${groupStat.index}">
-                            <h2>User List</h2>
+                    <div class="row">
+                        <div class="accordion col-12 col-md-6" th:id="'usersAccordion' + ${groupStat.index}">
+                            <h2>Członkowie grupy</h2>
                             <div th:each="groupUser, userStat : ${group.users}" class="accordion-item">
                                 <h2 class="accordion-header"
                                     th:id="'headingUser' + ${groupStat.index} + '-' + ${userStat.index}">
@@ -53,20 +53,29 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="w-50 ms-1">
-                            <h2>Group Tests List</h2>
-                            <div th:each="test, testStat : ${group.getGroupTests}" class="accordion-item">
-                                <h4 th:text="${test.getTest().getName()}"> Test name</h4>
-                                <h5 style="color:gray; font-size:12px" th:text="${#temporals.format(test.getBeginDate(), 'dd MMMM yyyy')}"> Begin date</h5>
-                                <a class="btn btn-primary" th:href="${'/tests/' + test.getTest().getId()}"> Przejdź do testu</a>
-                                <button
-                                        class="btn btn-success"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#confirmationModal"
-                                        th:onclick="'updateData(\'' + ${group.getId()} + '\', \'' + ${test.getTest().getId()} + '\')'"
-                                > Dodaj test każdemu użytkownikowi</button>
+                        <div class="col-12 col-md-6">
+                            <h2>Testy grupy</h2>
+                            <div th:each="test, testStat : ${group.getGroupTests}" class="accordion-item p-1">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h4 th:text="${test.getTest().getName()}"> Test name</h4>
+                                        <h5 style="color:gray; font-size:12px" th:text="${#temporals.format(test.getBeginDate(), 'dd/MM/yyyy HH:mm') + ' - ' + #temporals.format(test.getEndDate(), 'dd/MM/yyyy HH:mm')}"> Begin date</h5>
+                                    </div>
+                                    <div>
+                                        <a class="btn btn-primary d-flex align-items-center" th:href="${'/tests/' + test.getTest().getId()}"> Przejdź do testu</a>
+                                        <button
+                                                class="btn btn-danger"
+                                                th:onclick="'deleteTestForGroup(\'' + ${group.getId()} + '\'' + ${test.getTest().getId()} + '\')'"
+                                        >Usuń test grupie</button>
+                                    </div>
+                                </div>
                             </div>
-                            <button class="btn btn-secondary">Zaplanuj test</button>
+                            <button
+                                    class="btn btn-secondary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmationModal"
+                                    th:onclick="'updateGroupId(\'' + ${group.getId()} + '\')'"
+                            >Zaplanuj lub edytuj test dla grupy</button>
                         </div>
                     </div>
                 </div>
@@ -80,15 +89,30 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <h5 class="modal-title" id="confirmationModalLabel">Przypisz test grupie</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Czy jesteś pewny, że chcesz dodać ten test?
+                <div id="error-container" class="fw-bold text-danger"></div>
+                <div>Wybierz test który chcesz przypisać grupie lub
+                <a href="/tests/manage"> Przejrzyj listę testów</a>
+                </div>
+                <select id="selectTest" class="form-select mb-2">
+                    <option value="-1">----</option>
+                    <option th:each="test : ${tests}" th:value="${test.id}" th:text="${test.name}"></option>
+                </select>
+
+                <div>Wybierz datę oraz godzinę rozpoczęcia testu</div>
+                    <input type="date" class="form-control" name="start" id="date1" value="2024-06-22" min="2018-01-01" />
+                    <input type="time" id="startDateInput" class="form-control" value="00:00">
+
+                <div class="mt-2">Wybierz datę oraz godzinę końca testu</div>
+                    <input type="date" class="form-control" name="start" id="date2" value="2024-06-22" min="2018-01-01" />
+                    <input type="time" id="endDateInput" class="form-control" value="23:59">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addTestToAllUsersInGroup()">Potwierdź</button>
+                <button type="button" class="btn btn-primary" onclick="addTestToGroup()">Potwierdź</button>
             </div>
         </div>
     </div>
@@ -99,24 +123,93 @@
     const data = {
         groupId: -1,
         testId: -1,
+        beginDate: null,
+        endDate: null
     }
 
-    const updateData = (gId, tId) => {
+    const updateGroupId = (gId) => {
         data.groupId = gId;
-        data.testId = tId;
+    }
+
+    const addTestToGroup = () => {
+        const errorContainer = document.getElementById('error-container');
+
+        const beginDate = new Date(data.beginDate);
+        const endDate = new Date(data.endDate);
 
         console.log(data);
+        if (data.testId == -1) {
+            errorContainer.innerHTML = "Wybierz test!"
+        } else if(endDate < beginDate) {
+            errorContainer.innerHTML = "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia testu!"
+        } else {
+            axios.post(`/api/addTest/${data.groupId}/${data.testId}`, {
+                beginDate: data.beginDate,
+                endDate: data.endDate
+            })
+                .then(res => {
+                    window.location.reload();
+                })
+                .catch(err => console.error(err));
+        }
     }
 
-    const addTestToAllUsersInGroup = () => {
-        axios.get(`/api/addTest/${data.groupId}/${data.testId}`)
+    // Elementy input dla start i end date
+    var startDateInput = document.getElementById('startDateInput');
+    var endDateInput = document.getElementById('endDateInput');
+    var date1Input = document.getElementById('date1');
+    var date2Input = document.getElementById('date2');
+
+    const updateLocalDateTime = () => {
+        var startDateInput = document.getElementById('startDateInput').value;
+        var endDateInput = document.getElementById('endDateInput').value;
+        var date1 = document.getElementById('date1').value;
+        var date2 = document.getElementById('date2').value;
+
+        if (startDateInput && endDateInput && date1 && date2) {
+            var formattedStartDate = `${date1}T${startDateInput}:00`;
+            var formattedEndDate = `${date2}T${endDateInput}:00`;
+
+            data.beginDate = formattedStartDate;
+            data.endDate = formattedEndDate;
+        } else {
+            console.error('Empty date or time value entered.');
+        }
+    }
+
+    // Event listener dla zmiany wartości inputów
+    startDateInput.addEventListener('change', updateLocalDateTime);
+    endDateInput.addEventListener('change', updateLocalDateTime);
+    date1Input.addEventListener('change', updateLocalDateTime);
+    date2Input.addEventListener('change', updateLocalDateTime);
+
+    // testId change
+    var selectElement = document.getElementById('selectTest');
+
+    selectElement.addEventListener('change', function() {
+        data.testId = selectElement.value;
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date().toISOString().split('T')[0];
+
+        document.getElementById('date1').value = today;
+        document.getElementById('date1').min = today;
+
+        document.getElementById('date2').value = today;
+        document.getElementById('date2').min = today;
+
+        updateLocalDateTime();
+    });
+
+
+    const deleteTestForGroup = (groupId, testId) => {
+        axios.delete(`/api/deleteTest/${groupId}/${testId}`)
             .then(res => {
-                window.location.reload();
+                console.log(res);
             })
             .catch(err => console.error(err));
     }
-
-
 </script>
 
 <script th:replace="js/logout :: script"></script>

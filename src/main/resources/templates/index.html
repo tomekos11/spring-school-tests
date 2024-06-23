@@ -6,9 +6,10 @@
 
 <div class="container mt-4">
     <div class="row">
-        <!-- Segment "Twoje wyniki" -->
-        <div class="col-md-4">
-            <div class="card">
+        <div class="col-md-4 col-lg-6 mb-2">
+
+            <!-- Segment "Twoje wyniki" -->
+            <div class="card mb-2">
                 <div class="card-body">
                     <h5 class="card-title">Twoje wyniki</h5>
                     <p class="card-text">Tutaj możesz umieścić informacje o twoich wynikach.</p>
@@ -21,10 +22,8 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Segment "Twoje dane" -->
-        <div class="col-md-4">
+            <!-- Segment "Twoje dane" -->
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Twoje dane</h5>
@@ -40,14 +39,15 @@
             </div>
         </div>
 
+
         <!-- Segment "Nadchodzące terminy testów" -->
-        <div class="col-md-4">
+        <div class="col-md-8 col-lg-6">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Nadchodzące terminy testów</h5>
                     <div th:each="group : ${user.getGroups()}">
                         <div th:if="${group != null and group.getGroup().getTests() != null}">
-                            <div th:each="loopTest : ${group.getGroup().getTests()}" class="d-flex justify-content-around border border-black-50 rounded p-2">
+                            <div th:each="loopTest : ${group.getGroup().getTests()}" th:if="${loopTest.getEndDate().isAfter(#temporals.createNow())}" class="d-flex justify-content-around border border-black-50 rounded p-2">
                                 <div>
                                     <div th:text="${loopTest.getTest().getName()}" class="fw-bold"></div>
                                     <div class="fw-bold fs-7">

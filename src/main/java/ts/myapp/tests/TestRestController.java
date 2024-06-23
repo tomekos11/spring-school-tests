@@ -3,26 +3,27 @@ package ts.myapp.tests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ts.myapp.groups.Group;
 import ts.myapp.groups.GroupRepository;
+import ts.myapp.groups.GroupTest;
+import ts.myapp.groups.GroupTestRepository;
 import ts.myapp.services.ApiResponse;
 import ts.myapp.services.UserService;
 import ts.myapp.users.User;
 import ts.myapp.users.UserTest;
 import ts.myapp.users.UserTestRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,25 +39,45 @@ public class TestRestController {
     private UserTestRepository userTestRepository;
 
     private final ObjectMapper objectMapper;
+    @Autowired
+    private GroupTestRepository groupTestRepository;
 
     public TestRestController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    @GetMapping("/api/addTest/{groupId}/{testId}")
-    public String addTestForAllUsers(@PathVariable Long groupId, @PathVariable Long testId) {
+    @PostMapping("/api/addTest/{groupId}/{testId}")
+    public String addTestToGroup(@PathVariable Long groupId, @PathVariable Long testId, @RequestBody BeginEndDateRequest request) {
         User currentUser = userService.me();
 
         if (!currentUser.getRole().equals("ADMIN")) return "Blad";
 
         Group group = groupRepository.findById(groupId).orElse(null);
-        if(group == null) return "Blad";
+        if (group == null) return "Blad";
 
         Test test = testRepository.findById(testId).orElse(null);
-        if(test == null) return "Blad";
+        if (test == null) return "Blad";
+
+        if (request.getEndDate().isBefore(request.getBeginDate())) return "Blad";
+
+        if (group.getAllTestsFromThisGroup().contains(test)) {
+            GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
+            if (groupTest == null) return "Blad";
+            groupTest.setBeginDate(request.getBeginDate());
+            groupTest.setEndDate(request.getEndDate());
+            groupTestRepository.save(groupTest);
+        } else {
+            GroupTest newGroupTest = new GroupTest();
+            newGroupTest.setGroup(group);
+            newGroupTest.setTest(test);
+            newGroupTest.setBeginDate(request.getBeginDate());
+            newGroupTest.setEndDate(request.getEndDate());
+            group.getTests().add(newGroupTest);
+            groupRepository.save(group);
+        }
 
         group.getAllUsersFromThisGroup().forEach(user -> {
-            if(!user.getAllUsersTestsIds().contains(test.getId())) {
+            if (!user.getAllUsersTestsIds().contains(test.getId())) {
                 UserTest newUserTest = new UserTest();
                 newUserTest.setUser(user);
                 newUserTest.setBeginDate(null);
@@ -104,5 +125,11 @@ public class TestRestController {
         private String message;
         @Getter
         private String type;
+    }
+
+    @Data
+    static class BeginEndDateRequest {
+        private LocalDateTime beginDate;
+        private LocalDateTime endDate;
     }
 }
