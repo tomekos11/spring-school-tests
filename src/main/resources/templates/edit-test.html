@@ -51,6 +51,9 @@
         </div>
     </div>
 </div>
+
+<div th:replace="fragments/imageModal"></div>
+
 <script th:inline="javascript">
 
     var testData = [[${test}]];
@@ -121,7 +124,8 @@
                     </div>
                     <div class="form-group mt-2">
                         <label for="image${index}">Załącz zdjęcie</label>
-                        <input type="file" class="form-control-file" id="image${index}" name="image">
+                        <input type="file" class="form-control-file" id="imageInput${question.id}" name="image"  accept=".jpg, .jpeg, .png, .svg" onchange="updateFile(${question.id})">
+                        <img src="${question.image.startsWith('data:image') ? question.image : `/${question.image}`}" alt="Brak zdjęcia" style="max-width: 100%; max-height: 350px; cursor:pointer" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="updateModalImage(this.src)">
                     </div>
                     <div class="form-group mt-2">
                         <label>Odpowiedzi</label>
@@ -166,6 +170,32 @@
         var answers = question.answers;
         for (var i = 0; i < answers.length; i++) {
             createAnswerRow(answers[i], question.id);
+        }
+    }
+
+
+    function updateFile(questionIndex) {
+        const fileInput = document.getElementById(`imageInput${questionIndex}`);
+        const file = fileInput.files[0];
+
+        if (file) {
+            const fileName = file.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+
+            if (['jpg', 'jpeg', 'png', 'svg'].includes(fileExtension)) {
+                const question = testData.questions.find(el => el.id === questionIndex);
+                if (question) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        console.log(event.target.result);
+                        question.image = event.target.result;
+                        console.log(testData);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                console.log('Zly format pliku');
+            }
         }
     }
 
@@ -271,6 +301,7 @@
             id: answerMaxId,
             answer,
             isCorrect,
+
             isNew: true,
         })
 
@@ -354,14 +385,7 @@
     function changeTestDetails() {
         console.log(testData);
 
-        axios.patch(`/api/tests/${testData.id}`, {
-            test: JSON.stringify(testData),
-            image: ''
-        }, {
-            headers: {
-                'Content-type': 'multipart/form-data'
-            }
-        })
+        axios.patch(`/api/tests/${testData.id}`, testData)
             .then(res => {
                 document.querySelector("html").innerHTML = res.data;
                 initializePage();

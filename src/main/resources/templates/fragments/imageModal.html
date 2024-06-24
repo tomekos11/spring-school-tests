@@ -1,0 +1,22 @@
+<!-- Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Pełny ekran zdjęcie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" class="img-fluid" alt="Pełny ekran zdjęcie">
+            </div>
+        </div>
+    </div>
+    <script>
+        updateModalImage = (questionSrc) => {
+            const modalImage = document.getElementById('modalImage');
+            if (modalImage) {
+                modalImage.src = questionSrc;
+            }
+        }
+    </script>
+</div>

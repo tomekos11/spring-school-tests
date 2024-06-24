@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import ts.myapp.answers.Answer;
@@ -133,7 +132,10 @@ public class TestController {
 
     @Transactional
     @PatchMapping("/api/tests/{id}")
-    public ModelAndView editTest(@PathVariable Long id, @RequestParam("test") String rqTest, Model model, RedirectAttributes redirectAttributes, MultipartFile image) throws JsonProcessingException {
+    public ModelAndView editTest(@PathVariable Long id, @RequestBody String rqTest, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
+
+        System.out.println(rqTest);
+
         User user = userService.me();
 
         String serializedUser = objectMapper.writeValueAsString(user);
@@ -153,7 +155,7 @@ public class TestController {
         testService.updateAnswers(jsonRqTest);
 
 //        dodaj / zaktualizuj / usun pytania
-        testService.updateQuestions(test, jsonRqTest, image);
+        testService.updateQuestions(test, jsonRqTest);
 
         String serializedTest = objectMapper.writeValueAsString(test);
         Test deserializedTest = objectMapper.readValue(serializedTest, Test.class);

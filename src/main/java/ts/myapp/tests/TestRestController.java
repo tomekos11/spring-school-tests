@@ -90,6 +90,38 @@ public class TestRestController {
     }
 
     @Transactional
+    @DeleteMapping("/api/deleteTest/{groupId}/{testId}")
+    public String deleteTestFromGroup(@PathVariable Long groupId, @PathVariable Long testId) {
+        User currentUser = userService.me();
+
+        if (!currentUser.getRole().equals("ADMIN")) return "Blad";
+
+        Group group = groupRepository.findById(groupId).orElse(null);
+        if (group == null) return "Blad";
+
+        Test test = testRepository.findById(testId).orElse(null);
+        if (test == null) return "Blad";
+
+        GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
+        if (groupTest == null) return "Blad";
+
+        group.getAllUsersFromThisGroup().forEach(user -> {
+            if (user.getAllUsersTestsIds().contains(test.getId())) {
+                System.out.println("robi sie !!");
+                userTestRepository.deleteUserTestByUserIdAndTestId(user.getId(), test.getId());
+                System.out.println("wykonalo !!");
+            }
+        });
+
+        groupTestRepository.delete(groupTest);
+
+
+
+        return "Git";
+    }
+
+
+    @Transactional
     @DeleteMapping("/api/tests/{id}")
     public ApiResponse<ResponseMessage> deleteTest(@PathVariable Long id) throws JsonProcessingException, JSONException {
         User user = userService.me();

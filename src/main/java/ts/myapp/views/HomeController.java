@@ -37,17 +37,11 @@ public class HomeController {
 
         User currentUser = userService.me();
 
-//        List<Group> groups = currentUser.getGroups().stream().map(el -> el.getGroup()).toList();
-
-//        String serializedUser = objectMapper.writeValueAsString(currentUser);
-//        User deserializedUser = objectMapper.readValue(serializedUser, User.class);
-
-//        String serializedGroups = objectMapper.writeValueAsString(groups);
-//        List<Group> deserializedGroups = objectMapper.readValue(serializedGroups, new TypeReference<List<Group>>() {});
-
         model.addAttribute("user", currentUser);
-//        model.addAttribute("user", deserializedUser);
-//        model.addAttribute("userGroups", deserializedGroups);
+
+        currentUser.getAllUsersTests().forEach(userTest -> {
+
+        });
 
         return "index";
     }

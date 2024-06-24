@@ -65,7 +65,7 @@
                                         <a class="btn btn-primary d-flex align-items-center" th:href="${'/tests/' + test.getTest().getId()}"> Przejdź do testu</a>
                                         <button
                                                 class="btn btn-danger"
-                                                th:onclick="'deleteTestForGroup(\'' + ${group.getId()} + '\'' + ${test.getTest().getId()} + '\')'"
+                                                th:onclick="'deleteTestForGroup(' + ${group.getId()} + ',' + ${test.getTest().getId()} + ')'"
                                         >Usuń test grupie</button>
                                     </div>
                                 </div>
@@ -84,7 +84,7 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal1 -->
 <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -207,6 +207,7 @@
         axios.delete(`/api/deleteTest/${groupId}/${testId}`)
             .then(res => {
                 console.log(res);
+                window.location.reload();
             })
             .catch(err => console.error(err));
     }

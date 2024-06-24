@@ -16,8 +16,17 @@ import ts.myapp.questions.QuestionRepository;
 import ts.myapp.services.ApiResponse;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -64,6 +73,7 @@ public class TestService {
         List<Long> testQuestionIds = testQuestions.stream().map(el -> el.getId()).toList();
 
 
+        System.out.println(newTest);
         newTest.getQuestions().stream()
                 .forEach(question -> {
                     question.getAnswers().stream()
@@ -105,7 +115,7 @@ public class TestService {
         return true;
     }
 
-    public Boolean updateQuestions(Test test, Test newTest, MultipartFile image) {
+    public Boolean updateQuestions(Test test, Test newTest) {
 
         List<Question> testQuestions = test.getQuestions();
         List<Long> testQuestionIds = testQuestions.stream().map(el -> el.getId()).toList();
@@ -114,12 +124,14 @@ public class TestService {
 
         newTest.getQuestions().stream()
                 .forEach(question -> {
-                    System.out.println(question);
                     if (testQuestionIds.contains(question.getId())) {
                         Question questionToUpdate = testQuestions.stream().filter(el ->el.getId().equals(question.getId())).findFirst().orElse(null);
                         if (questionToUpdate != null) {
                             questionToUpdate.setContent(question.getContent());
-                            questionToUpdate.setImage("TODO");
+                            System.out.println(isBase64(question.getImage()));
+                            if (isBase64(question.getImage())) {
+                                questionToUpdate.setImage(this.createImage(question.getImage(), questionToUpdate.getId()));
+                            }
                             questionToUpdate.setPointAmount(question.getPointAmount());
                             questionRepository.save(questionToUpdate);
                         }
@@ -129,7 +141,12 @@ public class TestService {
                         newQuestion.setTest(test);
                         newQuestion.setAnswers(new ArrayList<>());
                         newQuestion.setContent(question.getContent());
-                        newQuestion.setImage("TODO");
+                        System.out.println(isBase64(question.getImage()));
+                        if (isBase64(question.getImage())) {
+                            newQuestion.setImage(this.createImage(question.getImage(), questionRepository.findMaxId()));
+                        } else {
+                            newQuestion.setImage(null);
+                        }
                         newQuestion.setPointAmount(question.getPointAmount());
                         questionRepository.save(newQuestion);
 
@@ -160,4 +177,81 @@ public class TestService {
 
         return true;
     }
+
+    public String createImage(String base64Image, Long questionId) {
+        if (base64Image != null && !base64Image.isEmpty()) {
+            try {
+                // Sprawdzenie typu i rozszerzenia pliku na podstawie Base64
+                String[] parts = base64Image.split(",");
+                String extension = "jpg"; // Domyślne rozszerzenie
+                if (parts.length > 0) {
+                    String header = parts[0];
+                    if (header.contains("jpeg")) {
+                        extension = "jpeg";
+                    } else if (header.contains("png")) {
+                        extension = "png";
+                    } else if (header.contains("svg")) {
+                        extension = "svg";
+                    }
+                }
+
+                // Dekodowanie Base64 do postaci binarnej
+                byte[] imageBytes = Base64.getDecoder().decode(parts[1].getBytes());
+
+                // Generowanie unikalnej nazwy pliku
+                String fileName = "question" + questionId.toString() + "-" + UUID.randomUUID() + "." + extension;
+
+                // Zapis obrazu do pliku
+                Path uploadDir = Paths.get("data/questions");
+                if (!Files.exists(uploadDir)) {
+                    Files.createDirectories(uploadDir);
+                }
+                Path filePath = uploadDir.resolve(fileName);
+
+                // Usunięcie istniejącego pliku, jeśli taki istnieje
+                deleteExistingImageFile(questionId);
+
+                // Zapis nowego pliku
+                Files.write(filePath, imageBytes);
+
+                return filePath.toString();
+            } catch (IOException e) {
+                throw new RuntimeException("Error saving image", e);
+            }
+        }
+        return "blad";
+    }
+
+    // Metoda do usuwania istniejącego pliku dla danego pytania
+    private void deleteExistingImageFile(Long questionId) {
+        // Twój kod do usunięcia istniejącego pliku
+        try {
+            Path uploadDir = Paths.get("data/questions");
+            String prefix = "question" + questionId.toString();
+
+            // Pobranie listy plików pasujących do prefixu
+            List<Path> existingFiles = Files.list(uploadDir)
+                    .filter(path -> path.getFileName().toString().startsWith(prefix))
+                    .collect(Collectors.toList());
+
+            // Usunięcie znalezionych plików
+            for (Path file : existingFiles) {
+                Files.deleteIfExists(file);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error deleting existing image", e);
+        }
+    }
+
+    public static boolean isBase64(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        Pattern pattern = Pattern.compile("^data:image/[a-zA-Z]+;base64,([\\w+/]*[=]*)*$");
+
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
+    }
+
 }
