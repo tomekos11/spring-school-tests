@@ -39,4 +39,10 @@ public class UserTest {
     private Integer pointAmount;
 
 
+//    @JsonGetter("UserTestResult")
+//    public int getUserTestResult() {
+//        this.getTest().getQuestions().stream().forEach(question ->
+//                question.getUserAnswers());
+//        return .stream().map(UserTest::getTest).toList().stream().map(Test::getId).collect(Collectors.toList());
+//    }
 }

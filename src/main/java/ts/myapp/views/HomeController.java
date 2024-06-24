@@ -39,10 +39,6 @@ public class HomeController {
 
         model.addAttribute("user", currentUser);
 
-        currentUser.getAllUsersTests().forEach(userTest -> {
-
-        });
-
         return "index";
     }
 
