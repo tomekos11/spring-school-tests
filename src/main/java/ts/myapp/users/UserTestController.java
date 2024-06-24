@@ -9,24 +9,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ts.myapp.answers.Answer;
-import ts.myapp.answers.UserAnswer;
+import ts.myapp.answers.AnswerSummary;
 import ts.myapp.groups.Group;
 import ts.myapp.groups.GroupTest;
 import ts.myapp.groups.GroupTestRepository;
 import ts.myapp.questions.Question;
 import ts.myapp.questions.QuestionRepository;
 import ts.myapp.services.UserService;
-import ts.myapp.tests.Test;
-import ts.myapp.tests.TestRepository;
-import ts.myapp.users.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 public class UserTestController {
@@ -64,9 +56,9 @@ public class UserTestController {
             return "no_required_permissions";
         }
 
-        GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
-
-
+//        GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
+        UserTest userTest = userTestRepository.findByTestIdAndUserId(testId, user.getId());
+        GroupTest groupTest = userTest.getGroupTest();
 
 //        if (userTest == null || groupTest == null) {
         if (groupTest == null) {
@@ -86,12 +78,12 @@ public class UserTestController {
 
         List<Question> testQuestions = groupTest.getTest().getQuestions();
 
-        UserAnswer lastQuestion = user.getAnswers().stream()
+        AnswerSummary lastQuestion = userTest.getAnswerSummaries().stream()
                 .filter(answer -> answer.getIsCorrect() == null)
                 .filter(answer -> testQuestions.stream().anyMatch(question -> question.equals(answer.getQuestion())))
                 .findFirst().orElse(null);
 
-        List<UserAnswer> alreadyAnsweredQuestions = user.getAnswers().stream()
+        List<AnswerSummary> alreadyAnsweredQuestions = userTest.getAnswerSummaries().stream()
                 .filter(answer -> answer.getIsCorrect() != null && testQuestions.stream().anyMatch(question -> question.equals(answer.getQuestion())))
                         .toList();
 
@@ -101,20 +93,20 @@ public class UserTestController {
         GroupTest deserializedGroupTest = objectMapper.readValue(serializedGroupTest, GroupTest.class);
 
         String serializedAlreadyAnsweredQuestions = objectMapper.writeValueAsString(alreadyAnsweredQuestions);
-        List<UserAnswer> deserializedAlreadyAnsweredQuestions = objectMapper.readValue(serializedAlreadyAnsweredQuestions, new TypeReference<List<UserAnswer>>() {});
+        List<AnswerSummary> deserializedAlreadyAnsweredQuestions = objectMapper.readValue(serializedAlreadyAnsweredQuestions, new TypeReference<List<AnswerSummary>>() {});
 
         String serializedUser = objectMapper.writeValueAsString(user);
         User deserializedUser = objectMapper.readValue(serializedUser, User.class);
 
-        long correctAnswerAmount = deserializedAlreadyAnsweredQuestions.stream().filter(el -> el.getIsCorrect()).count();
-        double correctAnswerPercentage =  (double) (correctAnswerAmount * 100 / groupTest.getTest().getQuestions().size());
+        double correctAnswerPercentage =  (double) (userTest.getTestPointsAmount() * 100 /userTest.getAllTestPointsAmount());
+
 
         model.addAttribute("user", deserializedUser);
         model.addAttribute("groupTest", deserializedGroupTest);
         model.addAttribute("alreadyAnsweredQuestions", deserializedAlreadyAnsweredQuestions);
-        model.addAttribute("correctAnswerAmount", correctAnswerAmount);
         model.addAttribute("correctAnswerPercentage", (int) correctAnswerPercentage);
         model.addAttribute("mark", userTestService.calculateGrade(correctAnswerPercentage));
+        model.addAttribute("userTest", userTest);
 
         if (lastQuestion != null) {
             model.addAttribute("lastQuestion", lastQuestion);
@@ -124,4 +116,6 @@ public class UserTestController {
 
         return "test";
     }
+
+
 }

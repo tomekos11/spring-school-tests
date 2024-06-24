@@ -60,29 +60,31 @@ public class TestRestController {
 
         if (request.getEndDate().isBefore(request.getBeginDate())) return "Blad";
 
+
+        GroupTest groupTest;
         if (group.getAllTestsFromThisGroup().contains(test)) {
-            GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
+            groupTest = groupTestRepository.findTest(groupId, testId);
             if (groupTest == null) return "Blad";
             groupTest.setBeginDate(request.getBeginDate());
             groupTest.setEndDate(request.getEndDate());
-            groupTestRepository.save(groupTest);
+            groupTest = groupTestRepository.save(groupTest);
         } else {
             GroupTest newGroupTest = new GroupTest();
             newGroupTest.setGroup(group);
             newGroupTest.setTest(test);
             newGroupTest.setBeginDate(request.getBeginDate());
             newGroupTest.setEndDate(request.getEndDate());
-            group.getTests().add(newGroupTest);
-            groupRepository.save(group);
+            groupTest = groupTestRepository.save(newGroupTest);
         }
 
+        GroupTest finalGroupTest = groupTest;
         group.getAllUsersFromThisGroup().forEach(user -> {
             if (!user.getAllUsersTestsIds().contains(test.getId())) {
                 UserTest newUserTest = new UserTest();
                 newUserTest.setUser(user);
                 newUserTest.setBeginDate(null);
-                newUserTest.setPointAmount(0);
                 newUserTest.setTest(test);
+                newUserTest.setGroupTest(finalGroupTest);
                 userTestRepository.save(newUserTest);
             }
         });

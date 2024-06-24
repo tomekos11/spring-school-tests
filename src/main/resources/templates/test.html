@@ -17,18 +17,24 @@
                     <h2 class="bg-warning text-white fw-bold p-2" th:if="${error}" th:text="${error}"> Error</h2>
                     <div class="card" th:if="${ groupTest.getEndDate().isBefore(#temporals.createNow()) }">
                         <div class="card-header">
-                            <h4 th:text="${'Wynik: ' + correctAnswerAmount + '/' + groupTest.getTest().getQuestions().size() + '  (' + correctAnswerPercentage + '%) = ' + mark}">Wynik</h4>
+                            <h4 th:text="${'Wynik: ' + userTest.getTestPointsAmount() + '/' + userTest.getAllTestPointsAmount() + '  (' + correctAnswerPercentage + '%) = ' + mark}">Wynik</h4>
                             <h5 th:if="${alreadyAnsweredQuestions.size() > 0}"> Twoje odpowiedzi </h5>
                         </div>
                         <div class="card-body">
-                            <div th:each="question : ${groupTest.getTest().getQuestions()}">
-                                <div th:text="${question}"></div>
-                                <div th:text="${question.getContent()}"></div>
-                                <div th:text="${question.getUserAnswers()}"></div>
-                                <div th:each="answeredQuestion : ${question.getAnswers()}">
-                                    <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${answeredQuestion.getIsCorrect()}"
-                                           th:class="${answeredQuestion.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect'}">
-                                    <label class="form-check-label" for="check" th:text="${answeredQuestion.getAnswer()}"></label>
+                            <div th:each="userAnswer : ${userTest.getAnswerSummaries()}" class="mb-3">
+                                <div th:text="${userAnswer.getQuestion().getContent() + '   ' + ((userAnswer.getIsCorrect() != null && userAnswer.getIsCorrect()) ? userAnswer.getQuestion().getPointAmount() : '0') + '/' + userAnswer.getQuestion().getPointAmount() }" th:class="${(userAnswer.getIsCorrect() != null && userAnswer.getIsCorrect()) ? 'text-success' : 'text-danger'}"></div>
+                                <img
+                                        th:src="'/' + ${userAnswer.getQuestion().getImage()}"
+                                        style="max-width: 100%; max-height: 350px; cursor:pointer"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#imageModal"
+                                        onclick="updateModalImage(this.src)"
+                                >
+                                <div th:test="${userAnswer.getAllAnswerIds()}"></div>
+                                <div th:each="questionAnswer : ${userAnswer.getQuestion().getAnswers()}">
+                                    <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${userAnswer.getAllAnswerIds().contains(questionAnswer.getId())}"
+                                           th:class="${userAnswer.getAllAnswerIds().contains(questionAnswer.getId()) ? (questionAnswer.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect') : ''}">
+                                    <label class="form-check-label" for="check" th:text="${questionAnswer.getAnswer()}"></label>
                                 </div>
                             </div>
                             <div th:if="${alreadyAnsweredQuestions.size() == 0}">
@@ -57,6 +63,7 @@
                             <li class="list-group-item">
                                 <div th:text="${lastQuestion.getQuestion().getContent()}"></div>
                                 <img
+                                        th:if="${lastQuestion.getQuestion().image != null && !lastQuestion.getQuestion().image.isEmpty()}"
                                         th:src="${lastQuestion.getQuestion().image.startsWith('data:image') ? lastQuestion.getQuestion().image : '/' + lastQuestion.getQuestion().image}"
                                         alt="Brak zdjęcia"
                                         style="max-width: 100%; max-height: 350px; cursor:pointer"
@@ -124,41 +131,16 @@
             }
         </script>
 
+        <script th:replace="js/logout :: script"></script>
+
         <style>
-            /* Dodaj style dla poprawnych odpowiedzi */
-            .checkbox-correct + .form-check-label::before {
-                background-color: green;
+            .checkbox-incorrect {
+                filter: drop-shadow(0px 0px 2px red)
             }
 
-            /* Dodaj style dla niepoprawnych odpowiedzi */
-            .checkbox-incorrect + .form-check-label::before {
-                background-color: red;
-            }
-
-            /* Upewnij się, że standardowy styl checkboxa jest ukryty */
-            input[type="checkbox"].form-check-input {
-                display: none;
-            }
-
-            /* Stylizacja dla niestandardowego checkboxa */
-            .form-check-label::before {
-                content: '';
-                display: inline-block;
-                width: 1rem;
-                height: 1rem;
-                border: 1px solid #ccc;
-                margin-right: 0.5rem;
-                vertical-align: middle;
-                text-align: center;
-                line-height: 1rem;
-            }
-
-            input[type="checkbox"].form-check-input:checked + .form-check-label::before {
-                background-color: #0d6efd; /* Zmień ten kolor na cokolwiek chcesz */
-                content: '\2713'; /* Użyj znaku check (✓) */
-                color: white;
+            .checkbox-correct {
+                filter: drop-shadow(0px 0px 2px forestgreen)
             }
         </style>
-        <script th:replace="js/logout :: script"></script>
     </body>
 </html>

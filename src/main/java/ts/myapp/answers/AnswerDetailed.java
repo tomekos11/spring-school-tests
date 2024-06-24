@@ -5,27 +5,26 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ts.myapp.groups.Group;
-import ts.myapp.users.User;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="answers_user_answers")
-public class AnswerUserAnswer {
+@Table(name="detailed_answers")
+public class AnswerDetailed {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @JsonIgnore
+//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "answer_id")
     private Answer answer;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_answer_id")
-    private UserAnswer userAnswer;
+    @JoinColumn(name = "answer_summary_id")
+    private AnswerSummary answerSummary;
 
 }

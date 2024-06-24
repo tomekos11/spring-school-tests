@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ts.myapp.tests.Test;
+import ts.myapp.users.UserTest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -37,6 +39,10 @@ public class GroupTest {
         private LocalDateTime endDate;
 
     //    hidden-relations
+
+        @JsonIgnore
+        @OneToMany(mappedBy = "groupTest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+        private List<UserTest> tests = new ArrayList<>();
 
 
 }

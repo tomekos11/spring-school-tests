@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ts.myapp.answers.Answer;
-import ts.myapp.answers.UserAnswer;
-import ts.myapp.groups.GroupTest;
+import ts.myapp.answers.AnswerSummary;
 import ts.myapp.tests.Test;
 
 import java.util.List;
@@ -42,6 +41,6 @@ public class Question {
 
     @JsonIgnore
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserAnswer> userAnswers;
+    private List<AnswerSummary> answerSummaries;
 
 }

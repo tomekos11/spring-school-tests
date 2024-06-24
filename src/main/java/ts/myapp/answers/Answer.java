@@ -1,12 +1,10 @@
 package ts.myapp.answers;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ts.myapp.groups.GroupTest;
 import ts.myapp.questions.Question;
 
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ public class Answer {
     //    hidden-relations
     @JsonIgnore
     @OneToMany(mappedBy = "answer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<AnswerUserAnswer> userAnswers = new ArrayList<>();
+    private List<AnswerDetailed> userAnswers = new ArrayList<>();
 
 
 }

@@ -5,12 +5,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ts.myapp.answers.UserAnswer;
 import ts.myapp.groups.Group;
 import ts.myapp.tests.Test;
 
 import java.util.List;
-import java.util.SequencedCollection;
 import java.util.stream.Collectors;
 
 
@@ -51,15 +49,11 @@ public class User {
     @JsonManagedReference("user-userGroup")
     private List<UserGroup> groups;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserAnswer> answers;
-
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserTest> tests;
 
     @JsonIgnore
-    public List<Group> getGroupNames () {
+    public List<Group> getGroupsAfterPivot () {
         return this.getGroups().stream().map(el -> el.getGroup()).toList();
     }
 
@@ -72,6 +66,7 @@ public class User {
     public List<Long> getAllUsersTestsIds() {
         return this.getTests().stream().map(UserTest::getTest).toList().stream().map(Test::getId).collect(Collectors.toList());
     }
+
 
 
 }

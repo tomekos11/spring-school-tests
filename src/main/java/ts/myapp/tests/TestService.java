@@ -3,24 +3,17 @@ package ts.myapp.tests;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import ts.myapp.answers.Answer;
 import ts.myapp.answers.repositories.AnswerRepository;
-import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
+import ts.myapp.answers.repositories.AnswerDetailed;
 import ts.myapp.questions.Question;
 import ts.myapp.questions.QuestionRepository;
-import ts.myapp.services.ApiResponse;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -37,7 +30,7 @@ public class TestService {
     @Autowired
     private AnswerRepository answerRepository;
     @Autowired
-    private AnswerUserAnswerRepository answerUserAnswerRepository;
+    private AnswerDetailed answerDetailed;
     @Autowired
     private QuestionRepository questionRepository;
 
@@ -108,7 +101,7 @@ public class TestService {
 
 //        usuwanie answerów
         answerIdsToDelete.stream().forEach(idToDelete -> {
-            answerUserAnswerRepository.deleteByAnswerId(idToDelete);
+            answerDetailed.deleteByAnswerId(idToDelete);
             answerRepository.deleteById(idToDelete);
         });
 
@@ -170,7 +163,7 @@ public class TestService {
 
 //        usuwanie pytan
         questionIdsToDelete.stream().forEach(idToDelete -> {
-            answerUserAnswerRepository.deleteByQuestionId(idToDelete);
+            answerDetailed.deleteByQuestionId(idToDelete);
             answerRepository.deleteByQuestionId(idToDelete);
             questionRepository.deleteById(idToDelete);
         });

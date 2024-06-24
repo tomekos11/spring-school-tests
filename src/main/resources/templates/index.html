@@ -15,9 +15,12 @@
                     <p class="card-text">Tutaj możesz umieścić informacje o twoich wynikach.</p>
                     <div th:each="userTest : ${user.getTests()}">
                         <div th:if="${userTest.getBeginDate() != null && userTest.getBeginDate().isBefore(#temporals.createNow())}" class="d-flex flex-column justify-content-around border border-black-50 rounded p-2">
-                            <p class="card-text" th:text="${userTest.getTest().getName()}"></p>
-                            <p class="card-text" th:text="${#temporals.format(userTest.getBeginDate(), 'dd MMMM yyyy')}"></p>
-                            <p class="card-text" th:text="${'Ilosc punktow: ' + '0' +' / '+ userTest.getTest().getQuestions().size()}"></p>
+                            <div>
+                                <p class="card-text" th:text="${userTest.getTest().getName()}"></p>
+                                <p class="card-text" th:text="${#temporals.format(userTest.getBeginDate(), 'dd MMMM yyyy')}"></p>
+                                <p class="card-text" th:text="${'Ilosc punktow: ' + userTest.getTestPointsAmount() +' / '+ userTest.getAllTestPointsAmount()}"></p>
+                            </div>
+                            <a class="btn btn-primary" type="button" th:href="${'/group/' + userTest.getGroupTest().getGroup().getId() +'/test/' + userTest.getTest().getId()}">Sprawdź swój wynik</a>
                         </div>
                     </div>
                 </div>

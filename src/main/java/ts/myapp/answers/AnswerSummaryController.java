@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ts.myapp.answers.repositories.AnswerRepository;
-import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
-import ts.myapp.answers.repositories.UserAnswerRepository;
+import ts.myapp.answers.repositories.AnswerSummary;
 import ts.myapp.groups.Group;
 import ts.myapp.groups.GroupTest;
 import ts.myapp.groups.GroupTestRepository;
@@ -13,19 +12,18 @@ import ts.myapp.services.UserService;
 import ts.myapp.users.User;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
-public class UserAnswerController {
+public class AnswerSummaryController {
     @Autowired
     private UserService userService;
     @Autowired
-    private UserAnswerRepository userAnswerRepository;
+    private AnswerSummary answerSummary;
     @Autowired
     private AnswerRepository answerRepository;
     @Autowired
-    private AnswerUserAnswerRepository answerUserAnswerRepository;
+    private ts.myapp.answers.repositories.AnswerDetailed answerDetailed;
     @Autowired
     private GroupTestRepository groupTestRepository;
 
@@ -51,27 +49,27 @@ public class UserAnswerController {
             return "Za późno";
         }
 
-        UserAnswer userAnswer = userAnswerRepository.findById(answerId).orElse(null);
+        ts.myapp.answers.AnswerSummary answerSummary = this.answerSummary.findById(answerId).orElse(null);
 
-        if (userAnswer == null) {
+        if (answerSummary == null) {
             return "Nie znaleziono odpowiedzi";
         }
 
-        if (!userAnswer.getUser().equals(user)) {
+        if (!answerSummary.getUserTest().getUser().equals(user)) {
             return "To nie twój answer";
         }
 
-        if (userAnswer.getIsCorrect() != null || request.size() > userAnswer.getQuestion().getAnswers().size() ) {
+        if (answerSummary.getIsCorrect() != null || request.size() > answerSummary.getQuestion().getAnswers().size() ) {
             return "Nie oszukuj!";
         }
 
-        List<Long> ids = userAnswer.getQuestion().getAnswers().stream()
+        List<Long> ids = answerSummary.getQuestion().getAnswers().stream()
                 .map(el -> el.getId())
                 .toList();
 
         for (Long idInRequest : request) {
             if (!ids.contains(idInRequest)){
-                userAnswer.setIsCorrect(false);
+                answerSummary.setIsCorrect(false);
                 return "Za oszustwo tracisz punkt";
             }
         }
@@ -80,28 +78,28 @@ public class UserAnswerController {
         for (Long idInRequest : request) {
             Answer answer = answerRepository.findById(idInRequest).orElse(null);
             if (answer != null) {
-                AnswerUserAnswer answerUserAnswer = new AnswerUserAnswer();
-                answerUserAnswer.setAnswer(answer);
-                answerUserAnswer.setUserAnswer(userAnswer);
-                answerUserAnswerRepository.save(answerUserAnswer);
+                AnswerDetailed answerDetailed = new AnswerDetailed();
+                answerDetailed.setAnswer(answer);
+                answerDetailed.setAnswerSummary(answerSummary);
+                this.answerDetailed.save(answerDetailed);
             }
         }
 
         System.out.println(ids);
         System.out.println(request);
 
-        ids = userAnswer.getQuestion().getAnswers().stream()
+        ids = answerSummary.getQuestion().getAnswers().stream()
                .filter(el -> el.getIsCorrect())
                 .map(el -> el.getId())
                 .toList();
 
         if (ids.containsAll(request) && request.containsAll(ids)) {
-            userAnswer.setIsCorrect(true);
+            answerSummary.setIsCorrect(true);
         } else {
-            userAnswer.setIsCorrect(false);
+            answerSummary.setIsCorrect(false);
         }
 
-        userAnswerRepository.save(userAnswer);
+        this.answerSummary.save(answerSummary);
         return "XD";
     }
 

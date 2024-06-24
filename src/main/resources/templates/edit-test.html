@@ -207,11 +207,14 @@
             id: questionMaxId,
             content: "Nowe pytanie",
             pointAmount: 0,
-            answers: []
+            answers: [],
+            image: ''
         };
 
         testData.questions.push(newQuestion);
         addQuestion(newQuestion, testData.questions.length - 1);
+
+        console.log(testData.questions);
     }
 
 

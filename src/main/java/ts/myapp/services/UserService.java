@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import ts.myapp.answers.UserAnswer;
-import ts.myapp.answers.repositories.UserAnswerRepository;
+import ts.myapp.answers.repositories.AnswerSummary;
 import ts.myapp.groups.GroupTest;
 import ts.myapp.groups.GroupTestRepository;
 import ts.myapp.questions.Question;
@@ -27,7 +26,7 @@ public class UserService {
     @Autowired
     private GroupTestRepository groupTestRepository;
     @Autowired
-    private UserAnswerRepository userAnswerRepository;
+    private AnswerSummary answerSummary;
 
     public User me() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,7 +45,7 @@ public class UserService {
 
         System.out.println(userTest.getBeginDate());
 
-        if (userTest == null || userTest.getBeginDate() != null || !user.getGroupNames().contains(groupTest.getGroup())) {
+        if (userTest == null || userTest.getBeginDate() != null || !user.getGroupsAfterPivot().contains(groupTest.getGroup())) {
             System.out.println("blad user service 1");
             return false;
         }
@@ -66,10 +65,10 @@ public class UserService {
         Collections.shuffle(questions);
 
         for(Question question : questions) {
-            UserAnswer userAnswer = new UserAnswer();
-            userAnswer.setQuestion(question);
-            userAnswer.setUser(user);
-            userAnswerRepository.save(userAnswer);
+            ts.myapp.answers.AnswerSummary answerSummary = new ts.myapp.answers.AnswerSummary();
+            answerSummary.setQuestion(question);
+            answerSummary.setUserTest(userTest);
+            this.answerSummary.save(answerSummary);
         }
 
         userTest.setBeginDate(now);

@@ -1,12 +1,7 @@
 package ts.myapp.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,23 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-import ts.myapp.answers.Answer;
 import ts.myapp.answers.repositories.AnswerRepository;
-import ts.myapp.answers.repositories.AnswerUserAnswerRepository;
-import ts.myapp.groups.Group;
+import ts.myapp.answers.repositories.AnswerDetailed;
 import ts.myapp.groups.GroupRepository;
-import ts.myapp.questions.Question;
 import ts.myapp.questions.QuestionRepository;
 import ts.myapp.services.UserService;
 import ts.myapp.users.User;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import ts.myapp.users.UserTest;
 import ts.myapp.users.UserTestRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class TestController {
@@ -46,7 +34,7 @@ public class TestController {
     @Autowired
     private AnswerRepository answerRepository;
     @Autowired
-    private AnswerUserAnswerRepository answerUserAnswerRepository;
+    private AnswerDetailed answerDetailed;
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
