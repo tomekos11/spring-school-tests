@@ -56,12 +56,10 @@ public class UserTestController {
             return "no_required_permissions";
         }
 
-//        GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
         UserTest userTest = userTestRepository.findByTestIdAndUserId(testId, user.getId());
         GroupTest groupTest = userTest.getGroupTest();
 
-//        if (userTest == null || groupTest == null) {
-        if (groupTest == null) {
+        if (userTest == null || groupTest == null) {
             System.out.println("BLAD2");
             return "no_required_permissions";
         }
@@ -116,6 +114,38 @@ public class UserTestController {
 
         return "test";
     }
+
+
+    @GetMapping("/user/{userId}/group/{groupId}/test/{testId}")
+    public String test(Model model, @PathVariable Long userId, @PathVariable Long groupId, @PathVariable Long testId) throws JsonProcessingException {
+        User user = userService.me();
+
+        model.addAttribute("user", user);
+
+        if (!user.getRole().equals("ADMIN")) {
+            return "no_required_permissions";
+        }
+
+        UserTest userTest = userTestRepository.findByTestIdAndUserId(testId, userId);
+        GroupTest groupTest = userTest.getGroupTest();
+
+        if (userTest == null || groupTest == null) {
+            return "no_required_permissions";
+        }
+
+        String serializedUser = objectMapper.writeValueAsString(user);
+        User deserializedUser = objectMapper.readValue(serializedUser, User.class);
+
+        double correctAnswerPercentage =  (double) (userTest.getTestPointsAmount() * 100 /userTest.getAllTestPointsAmount());
+
+        model.addAttribute("user", deserializedUser);
+        model.addAttribute("correctAnswerPercentage", (int) correctAnswerPercentage);
+        model.addAttribute("mark", userTestService.calculateGrade(correctAnswerPercentage));
+        model.addAttribute("userTest", userTest);
+
+        return "admin-test-preview";
+    }
+
 
 
 }

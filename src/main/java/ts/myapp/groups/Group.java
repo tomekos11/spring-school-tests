@@ -52,4 +52,20 @@ public class Group {
     public List<Test> getAllTestsFromThisGroup() {
         return this.getTests().stream().map(GroupTest::getTest).collect(Collectors.toList());
     }
+
+    @JsonGetter("allNoResitTestsFromThisGroup")
+    public List<Test> getAllNoResitTestsFromThisGroup() {
+        return this.getTests().stream()
+                .filter(test -> !test.getResit())
+                .map(resitTest -> resitTest.getTest())
+                .collect(Collectors.toList());
+    }
+
+    @JsonGetter("allResitTestsFromThisGroup")
+    public List<Test> getAllResitTestsFromThisGroup() {
+        return this.getTests().stream()
+                .filter(test -> test.getResit())
+                .map(resitTest -> resitTest.getTest())
+                .collect(Collectors.toList());
+    }
 }

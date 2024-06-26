@@ -47,36 +47,58 @@ public class TestRestController {
     }
 
     @PostMapping("/api/addTest/{groupId}/{testId}")
-    public String addTestToGroup(@PathVariable Long groupId, @PathVariable Long testId, @RequestBody BeginEndDateRequest request) {
+    public String addTestToGroup(@PathVariable Long groupId, @PathVariable Long testId, @RequestBody addOrPatchTestRequest request) {
         User currentUser = userService.me();
 
-        if (!currentUser.getRole().equals("ADMIN")) return "Blad";
+        if (!currentUser.getRole().equals("ADMIN")) return "Blad1";
 
         Group group = groupRepository.findById(groupId).orElse(null);
-        if (group == null) return "Blad";
+        if (group == null) return "Blad2";
 
         Test test = testRepository.findById(testId).orElse(null);
-        if (test == null) return "Blad";
+        if (test == null) return "Blad3";
 
-        if (request.getEndDate().isBefore(request.getBeginDate())) return "Blad";
-
+        if (request.getEndDate().isBefore(request.getBeginDate())) return "Blad4";
 
         GroupTest groupTest;
-        if (group.getAllTestsFromThisGroup().contains(test)) {
-            groupTest = groupTestRepository.findTest(groupId, testId);
-            if (groupTest == null) return "Blad";
-            groupTest.setBeginDate(request.getBeginDate());
-            groupTest.setEndDate(request.getEndDate());
-            groupTest = groupTestRepository.save(groupTest);
-        } else {
-            GroupTest newGroupTest = new GroupTest();
-            newGroupTest.setGroup(group);
-            newGroupTest.setTest(test);
-            newGroupTest.setBeginDate(request.getBeginDate());
-            newGroupTest.setEndDate(request.getEndDate());
-            groupTest = groupTestRepository.save(newGroupTest);
+        if (!request.resit) {
+//        tworzenie / aktualizacja testu
+            if (group.getAllNoResitTestsFromThisGroup().contains(test)) {
+                groupTest = groupTestRepository.findTest(groupId, testId);
+                if (groupTest == null) return "Blad5";
+                groupTest.setBeginDate(request.getBeginDate());
+                groupTest.setEndDate(request.getEndDate());
+                groupTest = groupTestRepository.save(groupTest);
+            } else {
+                GroupTest newGroupTest = new GroupTest();
+                newGroupTest.setGroup(group);
+                newGroupTest.setTest(test);
+                newGroupTest.setBeginDate(request.getBeginDate());
+                newGroupTest.setEndDate(request.getEndDate());
+                newGroupTest.setResit(false);
+                groupTest = groupTestRepository.save(newGroupTest);
+            }
         }
 
+        else {
+            if (group.getAllResitTestsFromThisGroup().contains(test)) {
+                groupTest = groupTestRepository.findResitTest(groupId, testId);
+                if (groupTest == null) return "Blad6";
+                groupTest.setBeginDate(request.getBeginDate());
+                groupTest.setEndDate(request.getEndDate());
+                groupTest = groupTestRepository.save(groupTest);
+            } else {
+                GroupTest newGroupTest = new GroupTest();
+                newGroupTest.setGroup(group);
+                newGroupTest.setTest(test);
+                newGroupTest.setBeginDate(request.getBeginDate());
+                newGroupTest.setEndDate(request.getEndDate());
+                newGroupTest.setResit(true);
+                groupTest = groupTestRepository.save(newGroupTest);
+            }
+        }
+
+//        dodawanie użytkowników do testu
         GroupTest finalGroupTest = groupTest;
         group.getAllUsersFromThisGroup().forEach(user -> {
             if (!user.getAllUsersTestsIds().contains(test.getId())) {
@@ -92,8 +114,8 @@ public class TestRestController {
     }
 
     @Transactional
-    @DeleteMapping("/api/deleteTest/{groupId}/{testId}")
-    public String deleteTestFromGroup(@PathVariable Long groupId, @PathVariable Long testId) {
+    @DeleteMapping("/api/deleteTest/{groupId}/{testId}/{resit}")
+    public String deleteTestFromGroup(@PathVariable Long groupId, @PathVariable Long testId, @PathVariable boolean resit) {
         User currentUser = userService.me();
 
         if (!currentUser.getRole().equals("ADMIN")) return "Blad";
@@ -104,7 +126,13 @@ public class TestRestController {
         Test test = testRepository.findById(testId).orElse(null);
         if (test == null) return "Blad";
 
-        GroupTest groupTest = groupTestRepository.findTest(groupId, testId);
+        GroupTest groupTest;
+        if (resit) {
+            groupTest = groupTestRepository.findResitTest(groupId, testId);
+        } else {
+            groupTest = groupTestRepository.findTest(groupId, testId);
+        }
+
         if (groupTest == null) return "Blad";
 
         group.getAllUsersFromThisGroup().forEach(user -> {
@@ -162,8 +190,9 @@ public class TestRestController {
     }
 
     @Data
-    static class BeginEndDateRequest {
+    static class addOrPatchTestRequest {
         private LocalDateTime beginDate;
         private LocalDateTime endDate;
+        private boolean resit;
     }
 }

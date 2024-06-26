@@ -57,6 +57,12 @@
                                         <span th:text="${group.getGroup().getName()}"></span>
                                         <span th:text="${group.getGroup().getType()}" class="text-success"></span>
                                     </div>
+                                    <div
+                                            th:text="${loopTest.getResit() ? 'II Termin' : 'I Termin'}"
+                                            th:class="${loopTest.getResit() ? 'text-danger' : 'text-primary'}"
+                                    >
+                                        Numer podejścia
+                                    </div>
                                     <div th:text="${loopTest.getBeginDate() + ' - ' + loopTest.getEndDate()}"></div>
                                 </div>
                                 <div>

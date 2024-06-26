@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head"></head>
+
+<body>
+<div th:replace="fragments/navbar :: nav(user=${user})"></div>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2 th:text="${userTest.getTest().getName()}">Test Name</h2>
+            <p th:text="${#temporals.format(userTest.getGroupTest().getBeginDate(), 'dd MMMM yyyy')}"></p>
+            <p th:text="${#temporals.format(userTest.getGroupTest().getBeginDate(), 'HH:mm') + ' - ' + #temporals.format(userTest.getGroupTest().getEndDate(), 'HH:mm')}">Start Date</p>
+            <p>
+                <span>Data zaczęcia testu przez użytkownika:</span>
+                <span
+                    th:text="${(userTest.getBeginDate() == null ? 'Użytkownik nie rozpoczął testu' : #temporals.format(userTest.getBeginDate()) ) }"
+                    th:class="${userTest.getBeginDate() == null ? 'text-danger' : 'text-success'}"
+                >
+                    Godzina rozpoczęcia testu przez użytkownika
+                </span>
+            </p>
+        </div>
+        <div class="card-body">
+            <div class="card">
+                <div class="card-header">
+                    <h4 th:text="${'Wynik: ' + userTest.getTestPointsAmount() + '/' + userTest.getAllTestPointsAmount() + '  (' + correctAnswerPercentage + '%) = ' + mark}">Wynik</h4>
+                    <h5> Odpowiedzi użytkownika </h5>
+                </div>
+                <div class="card-body">
+                    <div th:each="userAnswer : ${userTest.getAnswerSummaries()}" class="mb-3">
+                        <div th:text="${userAnswer.getQuestion().getContent() + '   ' + ((userAnswer.getIsCorrect() != null && userAnswer.getIsCorrect()) ? userAnswer.getQuestion().getPointAmount() : '0') + '/' + userAnswer.getQuestion().getPointAmount() }" th:class="${(userAnswer.getIsCorrect() != null && userAnswer.getIsCorrect()) ? 'text-success' : 'text-danger'}"></div>
+                        <img
+                                th:if="${userAnswer.getQuestion().getImage() != null && !userAnswer.getQuestion().getImage().isEmpty()}"
+                                th:src="'/' + ${userAnswer.getQuestion().getImage()}"
+                                style="max-width: 100%; max-height: 350px; cursor:pointer"
+                                data-bs-toggle="modal"
+                                data-bs-target="#imageModal"
+                                onclick="updateModalImage(this.src)"
+                        >
+                        <div th:each="questionAnswer : ${userAnswer.getQuestion().getAnswers()}">
+                            <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${userAnswer.getAllAnswerIds().contains(questionAnswer.getId())}"
+                                   th:class="${userAnswer.getAllAnswerIds().contains(questionAnswer.getId()) ? (questionAnswer.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect') : ''}">
+                            <label class="form-check-label" for="check" th:text="${questionAnswer.getAnswer()}"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/imageModal"></div>
+
+<script th:replace="js/logout :: script"></script>
+
+<style>
+    .checkbox-incorrect {
+        filter: drop-shadow(0px 0px 2px red)
+    }
+
+    .checkbox-correct {
+        filter: drop-shadow(0px 0px 2px forestgreen)
+    }
+</style>
+</body>
+</html>

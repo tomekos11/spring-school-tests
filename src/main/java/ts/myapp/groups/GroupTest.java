@@ -38,6 +38,8 @@ public class GroupTest {
         @Column(name="end_date")
         private LocalDateTime endDate;
 
+        private Boolean resit = false;
+
     //    hidden-relations
 
         @JsonIgnore

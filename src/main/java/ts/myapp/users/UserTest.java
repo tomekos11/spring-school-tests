@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ts.myapp.answers.AnswerSummary;
 import ts.myapp.groups.GroupTest;
+import ts.myapp.questions.Question;
 import ts.myapp.tests.Test;
 
 import java.time.LocalDateTime;
@@ -47,6 +48,17 @@ public class UserTest {
 
 
 
+    @JsonGetter("answerAmount")
+    public int getAnswersAmount() {
+        List<AnswerSummary> summaries = this.getAnswerSummaries();
+        if (summaries == null) {
+            return 0;
+        }
+        return (int) summaries.stream()
+                .filter(answer -> answer.getIsCorrect() != null)
+                .count();
+    }
+
     @JsonGetter("correctAnswerAmount")
     public int getCorrectAnswerAmount() {
         List<AnswerSummary> summaries = this.getAnswerSummaries();
@@ -72,11 +84,11 @@ public class UserTest {
 
     @JsonGetter("allTestPointsAmount")
     public int getAllTestPointsAmount() {
-        List<AnswerSummary> summaries = this.getAnswerSummaries();
-        if (summaries == null) {
+        List<Question> questions = this.getTest().getQuestions();
+        if (questions == null) {
             return 0;
         }
-        return summaries.stream().mapToInt(answer -> answer.getQuestion().getPointAmount()).sum();
+        return questions.stream().mapToInt(question -> question.getPointAmount()).sum();
     }
 
 }

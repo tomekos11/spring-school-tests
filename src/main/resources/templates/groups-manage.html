@@ -47,7 +47,11 @@
                                      th:attr="aria-labelledby='headingUser' + ${groupStat.index} + '-' + ${userStat.index}, data-bs-parent='#usersAccordion' + ${groupStat.index}">
                                     <div class="accordion-body">
                                         <ul>
-                                            <li th:each="test : ${groupUser.getTests()}" th:text="${test}">Test Name</li>
+                                            <li th:each="test : ${groupUser.getTests()}">
+                                                <a th:text="${test}" th:href="${'/user/' + groupUser.getId() + '/group/' + group.getId() + '/test/' + test.getId()}">
+                                                    Test Name
+                                                </a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -58,14 +62,14 @@
                             <div th:each="test, testStat : ${group.getGroupTests}" class="accordion-item p-1">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h4 th:text="${test.getTest().getName()}"> Test name</h4>
+                                        <h4 th:text="${test.getTest().getName() + (test.getResit() ? ' - poprawa' : '')}"> Test name</h4>
                                         <h5 style="color:gray; font-size:12px" th:text="${#temporals.format(test.getBeginDate(), 'dd/MM/yyyy HH:mm') + ' - ' + #temporals.format(test.getEndDate(), 'dd/MM/yyyy HH:mm')}"> Begin date</h5>
                                     </div>
                                     <div>
                                         <a class="btn btn-primary d-flex align-items-center" th:href="${'/tests/' + test.getTest().getId()}"> Przejdź do testu</a>
                                         <button
                                                 class="btn btn-danger"
-                                                th:onclick="'deleteTestForGroup(' + ${group.getId()} + ',' + ${test.getTest().getId()} + ')'"
+                                                th:onclick="'deleteTestForGroup(' + ${group.getId()} + ',' + ${test.getTest().getId()} + ',' + ${test.getResit()} +')'"
                                         >Usuń test grupie</button>
                                     </div>
                                 </div>
@@ -102,6 +106,9 @@
                     <option th:each="test : ${tests}" th:value="${test.id}" th:text="${test.name}"></option>
                 </select>
 
+                <input id="isResit" type="checkbox" class="form-control form-check-input" onchange="data.resit = this.checked" />
+                <label for="isResit" class="form-check-label">Czy to poprawa?</label>
+
                 <div>Wybierz datę oraz godzinę rozpoczęcia testu</div>
                     <input type="date" class="form-control" name="start" id="date1" value="2024-06-22" min="2018-01-01" />
                     <input type="time" id="startDateInput" class="form-control" value="00:00">
@@ -124,7 +131,8 @@
         groupId: -1,
         testId: -1,
         beginDate: null,
-        endDate: null
+        endDate: null,
+        resit: false
     }
 
     const updateGroupId = (gId) => {
@@ -145,7 +153,8 @@
         } else {
             axios.post(`/api/addTest/${data.groupId}/${data.testId}`, {
                 beginDate: data.beginDate,
-                endDate: data.endDate
+                endDate: data.endDate,
+                resit: data.resit,
             })
                 .then(res => {
                     window.location.reload();
@@ -203,8 +212,8 @@
     });
 
 
-    const deleteTestForGroup = (groupId, testId) => {
-        axios.delete(`/api/deleteTest/${groupId}/${testId}`)
+    const deleteTestForGroup = (groupId, testId, resit) => {
+        axios.delete(`/api/deleteTest/${groupId}/${testId}/${resit}`)
             .then(res => {
                 console.log(res);
                 window.location.reload();

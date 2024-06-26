@@ -3,6 +3,8 @@ package ts.myapp.tests;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ts.myapp.groups.Group;
+import ts.myapp.users.User;
 
 import java.util.List;
 import java.util.stream.Collectors;

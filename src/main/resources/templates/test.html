@@ -24,13 +24,13 @@
                             <div th:each="userAnswer : ${userTest.getAnswerSummaries()}" class="mb-3">
                                 <div th:text="${userAnswer.getQuestion().getContent() + '   ' + ((userAnswer.getIsCorrect() != null && userAnswer.getIsCorrect()) ? userAnswer.getQuestion().getPointAmount() : '0') + '/' + userAnswer.getQuestion().getPointAmount() }" th:class="${(userAnswer.getIsCorrect() != null && userAnswer.getIsCorrect()) ? 'text-success' : 'text-danger'}"></div>
                                 <img
+                                        th:if="${userAnswer.getQuestion().getImage() != null && !userAnswer.getQuestion().getImage().isEmpty()}"
                                         th:src="'/' + ${userAnswer.getQuestion().getImage()}"
                                         style="max-width: 100%; max-height: 350px; cursor:pointer"
                                         data-bs-toggle="modal"
                                         data-bs-target="#imageModal"
                                         onclick="updateModalImage(this.src)"
                                 >
-                                <div th:test="${userAnswer.getAllAnswerIds()}"></div>
                                 <div th:each="questionAnswer : ${userAnswer.getQuestion().getAnswers()}">
                                     <input type="checkbox" id="check" class="form-check-input" disabled th:checked="${userAnswer.getAllAnswerIds().contains(questionAnswer.getId())}"
                                            th:class="${userAnswer.getAllAnswerIds().contains(questionAnswer.getId()) ? (questionAnswer.getIsCorrect() ? 'checkbox-correct' : 'checkbox-incorrect') : ''}">

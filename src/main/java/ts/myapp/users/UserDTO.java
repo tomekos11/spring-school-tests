@@ -23,6 +23,7 @@ public class UserDTO {
         dto.setName(user.getName());
         dto.setIndeks(user.getIndeks());
         dto.setTests(TestDTO.from(user.getTests().stream().map(el -> el.getTest()).toList()));
+
         return dto;
     }
 

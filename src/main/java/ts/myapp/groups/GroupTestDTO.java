@@ -16,6 +16,7 @@ public class GroupTestDTO {
     private TestDTO test;
     private LocalDateTime beginDate;
     private LocalDateTime endDate;
+    private Boolean resit;
 
 
     // optional: method to convert Group entity to GroupDTO
@@ -25,7 +26,7 @@ public class GroupTestDTO {
         dto.setTest(TestDTO.from(groupTest.getTest()));
         dto.setBeginDate(groupTest.getBeginDate());
         dto.setEndDate(groupTest.getEndDate());
-
+        dto.setResit(groupTest.getResit());
         return dto;
     }
 

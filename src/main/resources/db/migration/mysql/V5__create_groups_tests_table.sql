@@ -4,6 +4,7 @@ CREATE TABLE groups_tests (
     test_id MEDIUMINT UNSIGNED NOT NULL,
     begin_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     end_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resit BOOLEAN DEFAULT 0,
     PRIMARY KEY (id),
     FOREIGN KEY (group_id) REFERENCES groups(id),
     FOREIGN KEY (test_id) REFERENCES tests(id)
