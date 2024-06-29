@@ -11,15 +11,18 @@ INSERT INTO answers (question_id, answer, is_correct) VALUES
     (1, "TAK", 1),
     (1, "NIE", 0),
     (2, "NIE WIEM", 0),
-    (2, "ROSJA", 1),
-    (2, "KOT", 0),
-    (3, "Polska", 1),
-    (3, "Kazachstan", 1),
-    (3, "Rosja", 0),
-    (4, "XD", 0),
-    (4, "XP", 0),
-    (4, "XC", 1),
-    (5, "lol", 0),
-    (5, "urugwaj", 1);
+    (2, "TAK", 1),
+    (2, "NIE", 0),
+    (3, "TAK", 1),
+    (3, "TAK", 1),
+    (3, "JASNE, ŻE TAK", 1),
+    (4, "Jest błąd w lini 3", 0),
+    (4, "Jest błąd w lini 5", 0),
+    (4, "Tak", 1),
+    (5, "XD", 0),
+    (5, "XP", 0),
+    (5, "XC", 1),
+    (6, "lol", 0),
+    (6, "urugwaj", 1);
 
 
